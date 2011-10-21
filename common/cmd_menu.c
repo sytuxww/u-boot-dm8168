@@ -22,11 +22,24 @@
 
 extern char console_buffer[];
 extern int readline (const char *const prompt);
+
+#define UPDATA_U_BOOT						'1'
+#define UPDATA_LINUX_KERNEL			'2'
+#define UPDATA_LINUX_JFFS2			'3'
+#define RUN_LINUX_NAND_FS_NFS		'4'
+#define RUN_LINUX_NET_FS_NFS		'5'
+#define RUN_LINUX_NAND_FS_NAND	'6'
+#define RUN_LINUX_NET_FS_NAND		'7'
+#define UPDATA_ANDROID_KERNEL		'8'
+#define UPDATA_ANDROID_FS				'9'
+#define RUN_ANDROID_FS_SD				'a'
+#define RUN_ANDROID_FS_NAND			'b'
+#define REBOOT_U_BOOT						'r'
+#define EXIT										'q'
 /*
  * static char awaitkey(unsigned long delay, int* error_p)
  * 
  * 说明：等待终端输入一个按键，并根据按键选择执行菜单。
- *
  *
  */
 static char awaitkey(unsigned long delay, int* error_p)
@@ -88,8 +101,6 @@ static unsigned long memsize_parse2 (const char *const ptr, const char **retptr)
     
 	return ret;
 }
-
-
 /*
  * void main_menu_usage(void)
  * 
@@ -127,195 +138,193 @@ void main_menu_usage(void)
  */
 void menu_shell(void)
 {
-    char c;
+    char input_cmd;
     char cmd_buf[500];
     while (1)
     {
         main_menu_usage();
-        c = awaitkey(-1, NULL);
-        printf("%c\n", c);
-        switch (c)
+        input_cmd = awaitkey(-1, NULL);
+        printf("%c\n", input_cmd);
+        switch (input_cmd)
         {
-	    case '1'://Download u-boot to Nand Flash
-	    {
-		printf("从TFTP服务器下载uboot.noxip.bin到NAND 0x0～0x260000...\n");
-		printf("0x00000000～0x00260000-------->u-boot.bin\n");
-		printf("0x00260000～0x00440000-------->env\n");
-		printf("0x00440000～0x006C0000-------->uImage-linux\n");
-		printf("0x006C0000～0x0D000000-------->linux_jffs2.bin\n");
-                strcpy(cmd_buf, 
-		"mw.b 0x81000000 0xFF 0x260000;\
-		tftp 0x81000000 u-boot.noxip.bin;\
-		nand erase 0x0 0x260000;\
-		nandecc hw 2;\
-		nand write.i 0x81000000 0x0 0x260000;\
-		nandecc hw 0");
-                run_command(cmd_buf, 0);
-                break;
-	    }
-            case '2'://Download Linux kernel uImage
+				    case UPDATA_U_BOOT://Download u-boot to Nand Flash
+				    {
+							printf("从TFTP服务器下载uboot.noxip.bin到NAND 0x0～0x260000...\n");
+							printf("0x00000000～0x00260000-------->u-boot.bin\n");
+							printf("0x00260000～0x00440000-------->env\n");
+							printf("0x00440000～0x006C0000-------->uImage-linux\n");
+							printf("0x006C0000～0x0D000000-------->linux_jffs2.bin\n");
+					    strcpy(cmd_buf, 
+							"mw.b 0x81000000 0xFF 0x260000;\
+							tftp 0x81000000 u-boot.noxip.bin;\
+							nand erase 0x0 0x260000;\
+							nandecc hw 2;\
+							nand write.i 0x81000000 0x0 0x260000;\
+							nandecc hw 0");
+			        run_command(cmd_buf, 0);
+			        break;
+				    }
+            case UPDATA_LINUX_KERNEL://Download Linux kernel uImage
             {
-		printf("从TFTP服务器下载linux镜像uImage-linux到NAND 0x440000～0x260000...\n");
-		printf("0x00000000～0x00260000-------->u-boot.bin\n");
-		printf("0x00260000～0x00440000-------->env\n");
-		printf("0x00440000～0x006C0000-------->uImage-linux\n");
-		printf("0x006C0000～0x0D000000-------->linux_jffs2.bin\n");
-                strcpy(cmd_buf, 
-		"mw.b 0x81000000 0xFF 0x440000;\
-		tftp 0x81000000 uImage-linux;\
-		nand erase 0x00280000 0x440000;\
-		nandecc hw 2;\
-		nand write 0x81000000 0x280000 0x440000;\
-		nandecc hw 0");
+							printf("从TFTP服务器下载linux镜像uImage-linux到NAND 0x440000～0x260000...\n");
+							printf("0x00000000～0x00260000-------->u-boot.bin\n");
+							printf("0x00260000～0x00440000-------->env\n");
+							printf("0x00440000～0x006C0000-------->uImage-linux\n");
+							printf("0x006C0000～0x0D000000-------->linux_jffs2.bin\n");
+					    strcpy(cmd_buf, 
+							"mw.b 0x81000000 0xFF 0x440000;\
+							tftp 0x81000000 uImage-linux;\
+							nand erase 0x00280000 0x440000;\
+							nandecc hw 2;\
+							nand write 0x81000000 0x280000 0x440000;\
+							nandecc hw 0");
                run_command(cmd_buf, 0);
-		break;
+							 break;
             }
             
-            case '3'://Download root_jffs2 image
+            case UPDATA_LINUX_JFFS2://Download root_jffs2 image
             {
-		printf("从TFTP服务器下载linux文件系统镜像linux_jffs2.bin到NAND 0x6C0000～0xD000000...\n");
-		printf("0x00000000～0x00260000-------->u-boot.bin\n");
-		printf("0x00260000～0x00440000-------->env\n");
-		printf("0x00440000～0x006C0000-------->uImage_linux.bin\n");
-		printf("0x006C0000～0x0D000000-------->linux_jffs2.bin\n");
-                strcpy(cmd_buf,
-		"mw.b 0x81000000 0xFF 0x0C820000;\
-		tftp 0x81000000 linux_jffs2.bin;\
-		nand erase 0x006C0000 0x0C820000;\
-		nandecc hw 2;\
-		nand write 0x81000000 0x006C0000 0x0C820000;\
-		nandecc hw 0");
+								printf("从TFTP服务器下载linux文件系统镜像linux_jffs2.bin到NAND 0x6C0000～0xD000000...\n");
+								printf("0x00000000～0x00260000-------->u-boot.bin\n");
+								printf("0x00260000～0x00440000-------->env\n");
+								printf("0x00440000～0x006C0000-------->uImage_linux.bin\n");
+								printf("0x006C0000～0x0D000000-------->linux_jffs2.bin\n");
+						    strcpy(cmd_buf,
+								"mw.b 0x81000000 0xFF 0x0C820000;\
+								tftp 0x81000000 linux_jffs2.bin;\
+								nand erase 0x006C0000 0x0C820000;\
+								nandecc hw 2;\
+								nand write 0x81000000 0x006C0000 0x0C820000;\
+								nandecc hw 0");
                 run_command(cmd_buf, 0);
                 break;
             }
 
-            case '4'://nfs
+            case RUN_LINUX_NAND_FS_NFS://nfs
             {
-		printf("从NAND读取linux镜像并从NFS服务器加载文件系统...\n");
-                strcpy(cmd_buf,
-		"dhcp;\
-		run addip;\
-		nandecc hw 2;\
-		nand read 0x81000000 0x280000 0x440000;\
-		nandecc hw 0;\
-		bootm 0x81000000");
+								printf("从NAND读取linux镜像并从NFS服务器加载文件系统...\n");
+						    strcpy(cmd_buf,
+								"dhcp;\
+								run addip;\
+								nandecc hw 2;\
+								nand read 0x81000000 0x280000 0x440000;\
+								nandecc hw 0;\
+								bootm 0x81000000");
                 run_command(cmd_buf, 0);
                 break;
             }
-            case '5'://nfs
+            case RUN_LINUX_NET_FS_NFS://nfs
             {
-		printf("从TFTP读取linux镜像uImage-linux并从NFS服务器加载文件系统...\n");
-                strcpy(cmd_buf, 
-		"dhcp;\
-		run addip;\
-		tftp 81000000 uImage-linux;\
-		bootm");
+								printf("从TFTP读取linux镜像uImage-linux并从NFS服务器加载文件系统...\n");
+						    strcpy(cmd_buf, 
+								"dhcp;\
+								run addip;\
+								tftp 81000000 uImage-linux;\
+								bootm");
                 run_command(cmd_buf, 0);
                 break;
             }
-            case '6'://从nand启动系统，nand挂载文件系统
+            case RUN_LINUX_NAND_FS_NAND://从nand启动系统，nand挂载文件系统
             {
                 printf("从NAND读取linux镜像并从NAND加载文件系统...\n");
                 strcpy(cmd_buf, 
-		"dhcp;\
-		run addip;\
-		nandecc hw 2;\
-		nand read 0x81000000 0x280000 0x440000;\
-		nandecc hw 0;\
-		setenv bootargs 'mem=128M console=ttyO2,115200n8 noinitrd root=/dev/mtdblock7 rw rootfstype=jffs2 ip=off';\
-		bootm 0x81000000");
+									"dhcp;\
+									run addip;\
+									nandecc hw 2;\
+									nand read 0x81000000 0x280000 0x440000;\
+									nandecc hw 0;\
+									setenv bootargs 'mem=128M console=ttyO2,115200n8 noinitrd root=/dev/mtdblock7 rw rootfstype=jffs2 ip=off';\
+									bootm 0x81000000");
                 run_command(cmd_buf, 0);
                 break;
             }
-            case '7'://从网络启动系统，nand挂载文件系统
+            case RUN_LINUX_NET_FS_NAND://从网络启动系统，nand挂载文件系统
             {
                 printf("从TFTP读取linux内核镜像uImage-linux并从NAND加载文件系统...\n");
                 strcpy(cmd_buf, 
-		"dhcp;\
-		run addip;\
-		tftp 81000000 uImage-linux;\
-		setenv bootargs 'mem=128M console=ttyO2,115200n8 noinitrd root=/dev/mtdblock7 rw rootfstype=jffs2 ip=off';\
-		bootm 0x81000000");
+									"dhcp;\
+									run addip;\
+									tftp 81000000 uImage-linux;\
+									setenv bootargs 'mem=128M console=ttyO2,115200n8 noinitrd root=/dev/mtdblock7 rw rootfstype=jffs2 ip=off';\
+									bootm 0x81000000");
                 run_command(cmd_buf, 0);
                 break;
             }
-            case '8'://更新android镜像到nand
+            case UPDATA_ANDROID_KERNEL://更新android镜像到nand
             {
                 printf("从TFTP读取Android内核镜像uImage-Android并更新至NAND 0x440000～0x260000...\n");
-		printf("0x00000000～0x00260000-------->u-boot\n");
-		printf("0x00260000～0x00440000-------->env\n");
-		printf("0x00440000～0x006C0000-------->android\n");
-		printf("0x006C0000～0x0D000000-------->fs\n");
-                strcpy(cmd_buf, 
-		"dhcp;\
-		run addip;\
-		tftp 81000000 uImage-Android;\
-		nand erase 0x00280000 0x00440000;\
-		nand write 0x81000000 0x00280000 0x00440000;\
-		bootm 0x81000000");
+								printf("0x00000000～0x00260000-------->u-boot\n");
+								printf("0x00260000～0x00440000-------->env\n");
+								printf("0x00440000～0x006C0000-------->android\n");
+								printf("0x006C0000～0x0D000000-------->fs\n");
+						    strcpy(cmd_buf, 
+								"dhcp;\
+								run addip;\
+								tftp 81000000 uImage-Android;\
+								nand erase 0x00280000 0x00440000;\
+								nand write 0x81000000 0x00280000 0x00440000;\
+								bootm 0x81000000");
                 run_command(cmd_buf, 0);
                 break;
             }
-            case '9'://更新android文件系统镜像到nand
+            case UPDATA_ANDROID_FS://更新android文件系统镜像到nand
             {
                 printf("从TFTP读取Android文件系统镜像android_jffs2.bin并更新至NAND 0x006C0000～0x0D000000...\n");
-		printf("0x00000000～0x00260000-------->u-boot.bin\n");
-		printf("0x00260000～0x00440000-------->env\n");
-		printf("0x00440000～0x006C0000-------->uImage_Android.bin\n");
-		printf("0x006C0000～0x0D000000-------->android_jffs2.bin\n");
+								printf("0x00000000～0x00260000-------->u-boot.bin\n");
+								printf("0x00260000～0x00440000-------->env\n");
+								printf("0x00440000～0x006C0000-------->uImage_Android.bin\n");
+								printf("0x006C0000～0x0D000000-------->android_jffs2.bin\n");
                 strcpy(cmd_buf, 
-		"dhcp;\
-		run addip;\
-		tftp 81000000 android_jffs2.bin;\
-		nand erase 0x006C0000 0x0C820000;\
-		nandecc hw 2;\
-		nand write 0x81000000 0x006C0000 0x0C820000;\
-		nandecc hw 0");
+									"dhcp;\
+									run addip;\
+									tftp 81000000 android_jffs2.bin;\
+									nand erase 0x006C0000 0x0C820000;\
+									nandecc hw 2;\
+									nand write 0x81000000 0x006C0000 0x0C820000;\
+									nandecc hw 0");
                 run_command(cmd_buf, 0);
                 break;
             }
-            case 'a'://启动android系统
+            case RUN_ANDROID_FS_SD://启动android系统
             {
                 printf("从TFTP读取Android镜像并以SD卡为文件系统启动...\n");
                 strcpy(cmd_buf, 
-		"dhcp;\
-		run addip;\
-		tftp 81000000 uImage-Android;\
-		setenv bootargs 'mem=166M@0x80000000 mem=768M@0x90000000 console=ttyO2,115200n8 androidboot.console=ttyO2  root=/dev/mmcblk0p2 rw rootfstype=ext3 rootdelay=1 init=/init ip=off';\
-		bootm 0x81000000");
+									"dhcp;\
+									run addip;\
+									tftp 81000000 uImage-Android;\
+									setenv bootargs 'mem=166M@0x80000000 mem=768M@0x90000000 console=ttyO2,115200n8 androidboot.console=ttyO2  root=/dev/mmcblk0p2 rw rootfstype=ext3 rootdelay=1 init=/init ip=off';\
+									bootm 0x81000000");
                 run_command(cmd_buf, 0);
                 break;
             }
-            case 'b'://启动android系统
+            case RUN_ANDROID_FS_NAND://启动android系统
             {
                 printf("从TFTP读取Android镜像并以nand为文件系统启动...\n");
                 strcpy(cmd_buf, 
-		"dhcp;\
-		run addip;\
-		tftp 81000000 uImage-Android;\
-		setenv bootargs 'mem=166M@0x80000000 mem=768M@0x90000000 console=ttyO2,115200n8 androidboot.console=ttyO2  root=/dev/mtdblock7 rw rootfstype=jffs2 rootdelay=1 init=/init ip=off';\
-		run addip;\
-		bootm 0x81000000");
+									"dhcp;\
+									run addip;\
+									tftp 81000000 uImage-Android;\
+									setenv bootargs 'mem=166M@0x80000000 mem=768M@0x90000000 console=ttyO2,115200n8 androidboot.console=ttyO2  root=/dev/mtdblock7 rw rootfstype=jffs2 rootdelay=1 init=/init ip=off';\
+									run addip;\
+									bootm 0x81000000");
                 run_command(cmd_buf, 0);
                 break;
             }
-            case 'r':
+            case REBOOT_U_BOOT:
             {
-		strcpy(cmd_buf, "reset");
-		run_command(cmd_buf, 0);
+								strcpy(cmd_buf, "reset");
+								run_command(cmd_buf, 0);
                 break;
             }
             
-            case 'q':
+            case EXIT:
             {
                 return;    
                 break;
             }
-	default:
-	break;
-
-        }
-                
+						default:
+						break;
+        }          
     }
 }
 /*
@@ -328,6 +337,7 @@ int do_menu (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
     menu_shell();
     return 0;
 }
+
 U_BOOT_CMD(
  menu,3,0,do_menu,
  "menu - display a menu, to select the items to do something",
