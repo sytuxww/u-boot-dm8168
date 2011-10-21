@@ -74,10 +74,9 @@ static const u32 gpmc_m_nand_samsung[GPMC_MAX_REG] = {
 };
 //#endif
 #define GPMC_CS 0
-
-
-
 #endif
+
+//reinit gpmc cs
 void enable_gpmc_cs_config_type(const u32 nand_type)
 {
 	const u32 *gpmc_config = NULL;
@@ -201,6 +200,7 @@ void gpmc_init(void)
 	//
 	//-------------------------------------------------------------------//
 #if defined(CONFIG_CMD_NAND)	/* CS 0 */
+	//gpmc_config = gpmc_m_nand;
 	gpmc_config = gpmc_m_nand_micron;
 
 	base = PISMO1_NAND_BASE;

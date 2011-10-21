@@ -745,16 +745,10 @@ int cpu_release(int nr, int argc, char *argv[]);
 #define __ALIGN_MASK(x,mask)	(((x)+(mask))&~(mask))
 
 
-
-
-
-
+//add nand type
 #define NAND_SAMSUNG 0x00000001
 #define NAND_MICRON  0x00000002
+
 void enable_gpmc_cs_config_type(const u32 nand_type);
-
-
-
-
 
 #endif	/* __COMMON_H_ */
