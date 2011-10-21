@@ -38,6 +38,7 @@
 #include <asm/arch/mem.h>
 #include <asm/arch/sys_proto.h>
 #include <command.h>
+#include <linux/mtd/nand.h>
 
 /*
  * Only One NAND allowed on board at a time.
