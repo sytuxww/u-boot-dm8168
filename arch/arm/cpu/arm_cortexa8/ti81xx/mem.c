@@ -30,7 +30,8 @@
 
 // 0  2011年10月12日  添加了三星和美光的两种NAND的选择，两者差异为美光为16位数据，而
 //					  三星为8位数据线，且两者的时序选择不一样。
-
+// 1  2011年10月21日  修改三星和美光的配置，并添加enable_gpmc_cs_config_type(),给nand_base.c
+//						提供API，用于检测NAND的生产ID并根据ID选择不同的时序配置，以支持多个NAND。
 #include <common.h>
 #include <asm/io.h>
 #include <asm/arch/cpu.h>
@@ -76,8 +77,18 @@ static const u32 gpmc_m_nand_samsung[GPMC_MAX_REG] = {
 #define GPMC_CS 0
 #endif
 
-//reinit gpmc cs
-void enable_gpmc_cs_config_type(const u32 nand_type)
+/* 
+ * 函数: enable_gpmc_cs_config_type
+ *
+ * 参数: 
+ *		const u32 nand_type  NAND厂家
+ *
+ * 返回值: 无
+ *
+ * 描述:
+ * 		根据NAND厂家型号选择不同的配置参数重新配置GPMC。
+ */
+void enable_gpmc_cs_config_type(const u32 nand_maf_id)
 {
 	const u32 *gpmc_config = NULL;
 	u32 base = 0;
@@ -88,12 +99,12 @@ void enable_gpmc_cs_config_type(const u32 nand_type)
 	base = PISMO1_NAND_BASE;
 	size = PISMO1_NAND_SIZE;
 	
-	switch(nand_type)
+	switch(nand_maf_id)
 	{
-		case NAND_SAMSUNG:
+		case NAND_MFR_SAMSUNG:
 		gpmc_config = gpmc_m_nand_samsung;
 		break;
-		case NAND_MICRON:
+		case NAND_MFR_MICRON:
 		gpmc_config = gpmc_m_nand_micron;
 		break;
 		default:
@@ -106,9 +117,9 @@ void enable_gpmc_cs_config_type(const u32 nand_type)
  *
  * 参数: 
  *		const u32 *gpmc_config  GPMC参数设置
- *		struct gpmc_cs *cs		CPU寄存器
- *		u32 base				基地址
- *		u32 size				大小
+ *		struct gpmc_cs *cs			CPU寄存器
+ *		u32 base								基地址
+ *		u32 size								大小
  *
  * 返回值: 无
  *

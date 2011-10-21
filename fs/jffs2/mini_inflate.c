@@ -108,7 +108,6 @@ inline int pull_bit(struct bitstream *stream)
 	}
 	return ret;
 }
-
 /* discard bits up to the next whole byte */
 static void discard_bits(struct bitstream *stream)
 {
