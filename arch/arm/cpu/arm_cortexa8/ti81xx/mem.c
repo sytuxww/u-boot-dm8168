@@ -127,7 +127,7 @@ void enable_gpmc_cs_config_type(const u32 nand_maf_id)
  * 描述:
  * 		根据gpmc_config的参数设置，写入GPMC对应的cs寄存器，并设置NAND基地址和大小。
  */
-void enable_gpmc_cs_config(const u32 *gpmc_config, struct gpmc_cs *cs, u32 base,
+static void enable_gpmc_cs_config(const u32 *gpmc_config, struct gpmc_cs *cs, u32 base,
 			u32 size)
 {
 	writel(0, &cs->config7);
@@ -213,6 +213,7 @@ void gpmc_init(void)
 	//-------------------------------------------------------------------//
 #if defined(CONFIG_CMD_NAND)	/* CS 0 */
 	//gpmc_config = gpmc_m_nand;
+	/* 默认为美光的设置 */
 	gpmc_config = gpmc_m_nand_micron;
 
 	base = PISMO1_NAND_BASE;
