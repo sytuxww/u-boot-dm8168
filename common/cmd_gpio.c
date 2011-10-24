@@ -16,7 +16,7 @@
 int do_gpio (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
 	  char gpio;
-    if (argc != 2)
+    if (argc < 2)
     	goto usage;
     simple_strtoul(argv[1], &gpio, 16);
     omap_request_gpio(gpio);
@@ -38,7 +38,7 @@ usage:
 }
 
 U_BOOT_CMD(
- gpio,2,0,do_gpio,
+ gpio,3,0,do_gpio,
  "gpio - set or clear gpio in board!",
  " - set    gpio num on\n"
  " - clear  gpio num off\n"
