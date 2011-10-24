@@ -26,13 +26,16 @@ int do_gpio (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
     if (strncmp(argv[2],"on",2) == 0)
     {
     	printf("GPIO %d on!\n",gpio);
-    //	omap_set_gpio_dataout(gpio,1);
+    //	omap_set_gpio_dataout(gpio,1); 
     }
     else if (strncmp(argv[2],"off",3) == 0)
     {
     	printf("GPIO %d off!\n",gpio);
     //	omap_set_gpio_dataout(gpio,0);
     }
+    else
+    	goto usage;
+    	
     //omap_free_gpio(gpio);
     return 0;
     
