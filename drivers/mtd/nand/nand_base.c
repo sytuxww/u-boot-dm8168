@@ -2708,9 +2708,9 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 		       busw ? 16 : 8);
 		//TODO add more nand flash 
 		//base on maf_id reinit ti81xx_gpmc
-
-			enable_gpmc_cs_config_type(*maf_id);
-			//return ERR_PTR(-EINVAL);
+		printk(KERN_INFO "Reconfig NAND....\n");
+		enable_gpmc_cs_config_type(*maf_id);
+		//return ERR_PTR(-EINVAL);
 	}
 
 	/* Calculate the address shift from the page size */

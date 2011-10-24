@@ -34,15 +34,22 @@
  * This	program	is free	software;	you	can	redistribute it	and/or modify
  * it	under	the	terms	of the GNU General Public	License	version	2	as
  * published by	the	Free Software	Foundation.
+ *
+ * Copyright (C) 2011-2011 Wuxi Xinje Corporation
+ * Written by Luwei <sytu_xww@yahoo.com.cn>
+ * Support funtion for TI81xx
+ *
  */
  
- //OMAP	平台的GPIO设置
-
+ // TI81xx	平台的GPIO设置
+ // 目前包括 
+ // 1.设置IO方向
+ 
 #include <common.h>
 #include <asm/arch/gpio.h>
 #include <asm/io.h>
 #include <asm/errno.h>
-
+#if 0
 static struct	gpio_bank	gpio_bank_34xx[6]	=	{
 	{	(void	*)OMAP34XX_GPIO1_BASE, METHOD_GPIO_24XX	},
 	{	(void	*)OMAP34XX_GPIO2_BASE, METHOD_GPIO_24XX	},
@@ -51,8 +58,15 @@ static struct	gpio_bank	gpio_bank_34xx[6]	=	{
 	{	(void	*)OMAP34XX_GPIO5_BASE, METHOD_GPIO_24XX	},
 	{	(void	*)OMAP34XX_GPIO6_BASE, METHOD_GPIO_24XX	},
 };
+#endif
 
-static struct	gpio_bank	*gpio_bank = &gpio_bank_34xx[0];
+
+static struct gpio_bank gpio_bank_81xx[2] = {
+		{ (void *)TI81XX_GPIO1_BASE, METHOD_GPIO_81XX },
+		{ (void *)TI81XX_GPIO2_BASE, METHOD_GPIO_81XX },
+}
+
+static struct	gpio_bank	*gpio_bank = &gpio_bank_81xx[0];
 
 static inline	struct gpio_bank *get_gpio_bank(int	gpio)
 {
@@ -68,8 +82,14 @@ static inline	int	gpio_valid(int gpio)
 {
 	if (gpio < 0)
 		return -1;
+#if 0
 	if (gpio < 192)
 		return 0;
+#endif
+
+	if (gpio < 64)
+		return 0;
+		
 	return -1;
 }
 
@@ -90,6 +110,9 @@ static void _set_gpio_direction(struct gpio_bank *bank,	int	gpio,	int	is_input)
 	switch (bank->method)	{
 	case METHOD_GPIO_24XX:
 		reg	+= OMAP24XX_GPIO_OE;
+		break;
+	case METHOD_GPIO_81XX:
+		reg += TI81XX_GPIO_OE;
 		break;
 	default:
 		return;
@@ -125,8 +148,15 @@ static void _set_gpio_dataout(struct gpio_bank *bank,	int	gpio,	int	enable)
 			reg	+= OMAP24XX_GPIO_CLEARDATAOUT;
 		l	=	1	<< gpio;
 		break;
+	case METHOD_GPIO_81XX:
+	if (enable)
+		reg	+= TI81XX_GPIO_SETDATAOUT;
+	else
+		reg	+= TI81XX_GPIO_CLEARDATAOUT;
+	l	=	1	<< gpio;
+	break;
 	default:
-		printf("omap3-gpio unknown bank	method %s	%d\n",
+		printf("ti81xx-gpio unknown bank	method %s	%d\n",
 					 __FILE__, __LINE__);
 		return;
 	}
@@ -155,6 +185,9 @@ int	omap_get_gpio_datain(int gpio)
 	switch (bank->method)	{
 	case METHOD_GPIO_24XX:
 		reg	+= OMAP24XX_GPIO_DATAIN;
+		break;
+	case METHOD_GPIO_81XX:
+		reg	+= TI81XX_GPIO_DATAIN;
 		break;
 	default:
 		return -EINVAL;
