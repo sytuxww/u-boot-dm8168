@@ -31,6 +31,10 @@ int do_gpio (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
     }
     omap_free_gpio(gpio);
     return 0;
+    
+usage:
+			cmd_usage(cmdtp);
+			return -1;
 }
 
 U_BOOT_CMD(
