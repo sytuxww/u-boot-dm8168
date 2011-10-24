@@ -64,7 +64,7 @@ static struct	gpio_bank	gpio_bank_34xx[6]	=	{
 static struct gpio_bank gpio_bank_81xx[2] = {
 		{ (void *)TI81XX_GPIO1_BASE, METHOD_GPIO_81XX },
 		{ (void *)TI81XX_GPIO2_BASE, METHOD_GPIO_81XX },
-}
+};
 
 static struct	gpio_bank	*gpio_bank = &gpio_bank_81xx[0];
 
