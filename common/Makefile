@@ -168,6 +168,7 @@ COBJS-$(CONFIG_USB_KEYBOARD) += usb_kbd.o
 
 # menu
 COBJS-y += cmd_menu.o
+COBJS-y += cmd_gpio.o
 
 COBJS	:= $(sort $(COBJS-y))
 SRCS	:= $(AOBJS:.o=.S) $(COBJS:.o=.c)
