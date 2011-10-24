@@ -108,9 +108,11 @@ static void _set_gpio_direction(struct gpio_bank *bank,	int	gpio,	int	is_input)
 	u32	l;
 
 	switch (bank->method)	{
+#if 0
 	case METHOD_GPIO_24XX:
 		reg	+= OMAP24XX_GPIO_OE;
 		break;
+#endif
 	case METHOD_GPIO_81XX:
 		reg += TI81XX_GPIO_OE;
 		break;
@@ -141,6 +143,7 @@ static void _set_gpio_dataout(struct gpio_bank *bank,	int	gpio,	int	enable)
 	u32	l	=	0;
 
 	switch (bank->method)	{
+#if 0
 	case METHOD_GPIO_24XX:
 		if (enable)
 			reg	+= OMAP24XX_GPIO_SETDATAOUT;
@@ -148,6 +151,7 @@ static void _set_gpio_dataout(struct gpio_bank *bank,	int	gpio,	int	enable)
 			reg	+= OMAP24XX_GPIO_CLEARDATAOUT;
 		l	=	1	<< gpio;
 		break;
+#endif
 	case METHOD_GPIO_81XX:
 	if (enable)
 		reg	+= TI81XX_GPIO_SETDATAOUT;
@@ -183,9 +187,11 @@ int	omap_get_gpio_datain(int gpio)
 	bank = get_gpio_bank(gpio);
 	reg	=	bank->base;
 	switch (bank->method)	{
+#if 0
 	case METHOD_GPIO_24XX:
 		reg	+= OMAP24XX_GPIO_DATAIN;
 		break;
+#endif
 	case METHOD_GPIO_81XX:
 		reg	+= TI81XX_GPIO_DATAIN;
 		break;
