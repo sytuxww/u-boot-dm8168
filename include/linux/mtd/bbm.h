@@ -67,27 +67,33 @@ struct nand_bbt_descr {
 #define NAND_BBT_4BIT		0x00000004
 #define NAND_BBT_8BIT		0x00000008
 /* The bad block table is in the last good block of the device */
+/* 坏块表是否存放在设备最后一个好块中 */
 #define NAND_BBT_LASTBLOCK	0x00000010
 /* The bbt is at the given page, else we must scan for the bbt */
-#define NAND_BBT_ABSPAGE	0x00000020
+/* bbt在设备给定的页，否则我们将扫描生成bbt */
+#define NAND_BBT_ABSPAGE		0x00000020
 /* The bbt is at the given page, else we must scan for the bbt */
+/* 同上 */
 #define NAND_BBT_SEARCH		0x00000040
 /* bbt is stored per chip on multichip devices */
-#define NAND_BBT_PERCHIP	0x00000080
+/* 对于多芯片设备指明bbt是存放每个设备 */
+#define NAND_BBT_PERCHIP		0x00000080
 /* bbt has a version counter at offset veroffs */
-#define NAND_BBT_VERSION	0x00000100
+#define NAND_BBT_VERSION		0x00000100
 /* Create a bbt if none axists */
+/* 如果bbt不存在则创造一个bbt */
 #define NAND_BBT_CREATE		0x00000200
 /* Search good / bad pattern through all pages of a block */
+/* 从块中的所有也扫描寻找好/坏得标志 */
 #define NAND_BBT_SCANALLPAGES	0x00000400
 /* Scan block empty during good / bad block scan */
-#define NAND_BBT_SCANEMPTY	0x00000800
+#define NAND_BBT_SCANEMPTY		0x00000800
 /* Write bbt if neccecary */
-#define NAND_BBT_WRITE		0x00001000
+#define NAND_BBT_WRITE			0x00001000
 /* Read and write back block contents when writing bbt */
-#define NAND_BBT_SAVECONTENT	0x00002000
+#define NAND_BBT_SAVECONTENT		0x00002000
 /* Search good / bad pattern on the first and the second page */
-#define NAND_BBT_SCAN2NDPAGE	0x00004000
+#define NAND_BBT_SCAN2NDPAGE		0x00004000
 
 /* The maximum number of blocks to scan for a bbt */
 #define NAND_BBT_SCAN_MAXBLOCKS	4

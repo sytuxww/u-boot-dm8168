@@ -35,7 +35,11 @@
 #define ECCSIZE0		(ECCSIZE512BYTE << 12)
 #define ECCSIZE0SEL		(0x000 << 0)
 
+
+/* 为NAND块中的ECC分布 */
+/* 一般使用的是NAND Flash 块中的空闲区域来存放ECC和坏块标志 */
 /* Generic ECC Layouts */
+
 /* Large Page x8 NAND device Layout */
 #ifdef GPMC_NAND_ECC_LP_x8_LAYOUT
 #define GPMC_NAND_HW_ECC_LAYOUT {\

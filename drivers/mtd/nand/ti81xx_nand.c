@@ -581,6 +581,7 @@ static int ti81xx_read_page_bch(struct mtd_info *mtd, struct nand_chip *chip,
 	for (i = 0; eccsteps; eccsteps--, i += eccbytes, p += eccsize,
 				oob += eccbytes) {
 		/* read data */
+		/* 读取数据 */
 		chip->cmdfunc(mtd, NAND_CMD_RNDOUT, data_pos, page);
 		chip->read_buf(mtd, p, eccsize);
 #ifdef NAND_DEBUG
@@ -594,6 +595,7 @@ static int ti81xx_read_page_bch(struct mtd_info *mtd, struct nand_chip *chip,
 #endif
 
 		/* read respective ecc from oob area */
+		/* 从oob区域读取ecc,使用的是NAND_CMD_RNDOUT命令 */
 		chip->cmdfunc(mtd, NAND_CMD_RNDOUT, oob_pos, page);
 		chip->read_buf(mtd, oob, eccbytes);
 #ifdef NAND_DEBUG
