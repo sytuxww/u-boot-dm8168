@@ -40,19 +40,28 @@
 #define WR_MEM_8(a, d) (*(volatile char*)(a) = (d))
 #define RD_MEM_8(a) (*(volatile char*)(a))
 /*
+ * 管脚配置
  * IEN  - Input Enable
+ *		   输入使能
  * IDIS - Input Disable
+ *		   输入禁止
  * PTD  - Pull type Down
+ *		   下拉
  * PTU  - Pull type Up
+ *			上拉
  * DIS  - Pull type selection is inactive
+ *			上下拉禁止
  * EN   - Pull type selection is active
+ *			上下拉有效
  * M0   - Mode 0
+ *			模式选择
  */
-#define	IEN	(1 << 8)
-
+#define	IEN		(1 << 8)
 #define	IDIS	(0 << 8)
+
 #define	PTU	(1 << 4)
 #define	PTD	(0 << 4)
+
 #define	EN	(1 << 3)
 #define	DIS	(0 << 3)
 
@@ -1116,6 +1125,12 @@ void set_muxconf_regs(void)
  * Routine: s_init
  * Description: Does early system init of muxing and clocks.
  * - Called at time when only stack is available.
+ * 做早期的系统初始化和管脚复用配置以及时钟设置
+ * 在lowlevel_init.s中调用此函数，初始化DDR的时序设置
+ * 
+ * 参数:
+ *		u32 in_ddr  1      程序运行在DDR
+ *					  0		  程序没有运行在DDR
  **********************************************************/
 void s_init(u32 in_ddr)
 {

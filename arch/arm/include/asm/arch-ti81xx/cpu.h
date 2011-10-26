@@ -22,6 +22,14 @@
  *
  */
 
+/*
+ * TI81xx CPU 相关设定
+ * 包含:
+ *      CPU类型
+ *		 内部寄存器地址设定
+ *		 寄存器结构体
+ */
+ 
 #ifndef _TI81XX_CPU_H
 #define _TI81XX_CPU_H
 
@@ -42,8 +50,8 @@
 /* Timer register bits */
 #define TCLR_ST				BIT(0)		/* Start=1 Stop=0 */
 #define TCLR_AR				BIT(1)		/* Auto reload */
-#define TCLR_PRE			BIT(5)		/* Pre-scaler enable */
-#define TCLR_PTV_SHIFT			(2)		/* Pre-scaler shift value */
+#define TCLR_PRE				BIT(5)		/* Pre-scaler enable */
+#define TCLR_PTV_SHIFT		(2)			/* Pre-scaler shift value */
 #define TCLR_PRE_DISABLE		CL_BIT(5)	/* Pre-scalar disable */
 
 /* Control */
@@ -53,8 +61,8 @@
 #define DEVICE_MASK			(BIT(8) | BIT(9) | BIT(10))
 #define TST_DEVICE			0x0
 #define EMU_DEVICE			0x1
-#define HS_DEVICE			0x2
-#define GP_DEVICE			0x3
+#define HS_DEVICE				0x2
+#define GP_DEVICE				0x3
 
 /* cpu-id for TI81XX family */
 #define TI8168				0xb81e
@@ -102,22 +110,22 @@
 
 #define VIDEOPLL_CTRL			(CTRL_BASE + 0x0470)
 #define VIDEOPLL_PWD			(CTRL_BASE + 0x0474)
-#define VIDEOPLL_FREQ1			(CTRL_BASE + 0x0478)
+#define VIDEOPLL_FREQ1		(CTRL_BASE + 0x0478)
 #define VIDEOPLL_DIV1			(CTRL_BASE + 0x047C)
-#define VIDEOPLL_FREQ2			(CTRL_BASE + 0x0480)
+#define VIDEOPLL_FREQ2		(CTRL_BASE + 0x0480)
 #define VIDEOPLL_DIV2			(CTRL_BASE + 0x0484)
-#define VIDEOPLL_FREQ3			(CTRL_BASE + 0x0488)
+#define VIDEOPLL_FREQ3		(CTRL_BASE + 0x0488)
 #define VIDEOPLL_DIV3			(CTRL_BASE + 0x048C)
 
 #define AUDIOPLL_CTRL			(CTRL_BASE + 0x04A0)
 #define AUDIOPLL_PWD			(CTRL_BASE + 0x04A4)
-#define AUDIOPLL_FREQ2			(CTRL_BASE + 0x04B0)
+#define AUDIOPLL_FREQ2		(CTRL_BASE + 0x04B0)
 #define AUDIOPLL_DIV2			(CTRL_BASE + 0x04B4)
-#define AUDIOPLL_FREQ3			(CTRL_BASE + 0x04B8)
+#define AUDIOPLL_FREQ3		(CTRL_BASE + 0x04B8)
 #define AUDIOPLL_DIV3			(CTRL_BASE + 0x04BC)
-#define AUDIOPLL_FREQ4			(CTRL_BASE + 0x04C0)
+#define AUDIOPLL_FREQ4		(CTRL_BASE + 0x04C0)
 #define AUDIOPLL_DIV4			(CTRL_BASE + 0x04C4)
-#define AUDIOPLL_FREQ5			(CTRL_BASE + 0x04C8)
+#define AUDIOPLL_FREQ5		(CTRL_BASE + 0x04C8)
 #define AUDIOPLL_DIV5			(CTRL_BASE + 0x04CC)
 
 #endif
@@ -129,31 +137,31 @@
 #define PCIE_PLLCFG2			(CTRL_BASE + 0x6E0)
 #define PCIE_PLLCFG3			(CTRL_BASE + 0x6E4)
 #define PCIE_PLLCFG4			(CTRL_BASE + 0x6E8)
-#define PCIE_PLLSTATUS			(CTRL_BASE + 0x6EC)
+#define PCIE_PLLSTATUS		(CTRL_BASE + 0x6EC)
 #define PCIE_RXSTATUS			(CTRL_BASE + 0x6F0)
 #define PCIE_TXSTATUS			(CTRL_BASE + 0x6F4)
-#define SERDES_REFCLK_CTRL		(CTRL_BASE + 0xE24)
+#define SERDES_REFCLK_CTRL	(CTRL_BASE + 0xE24)
 
 #define SATA_PLLCFG0			(CTRL_BASE + 0x720)
 #define SATA_PLLCFG1			(CTRL_BASE + 0x724)
 #define SATA_PLLCFG2			(CTRL_BASE + 0x728)
 #define SATA_PLLCFG3			(CTRL_BASE + 0x72C)
 #define SATA_PLLCFG4			(CTRL_BASE + 0x730)
-#define SATA_PLLSTATUS			(CTRL_BASE + 0x734)
+#define SATA_PLLSTATUS		(CTRL_BASE + 0x734)
 #define SATA_RXSTATUS			(CTRL_BASE + 0x738)
 #define SATA_TXSTATUS			(CTRL_BASE + 0x73C)
 
 /* pin muxing registers */
 #define PIN_CTRL_BASE			(CTRL_BASE + 0x800)
-#define N_PINS				(271) /* PIN1=800, PIN 271=800+270*4=C38) */
+#define N_PINS					(271) /* PIN1=800, PIN 271=800+270*4=C38) */
 
 /* Clocks are derived from ADPLLJ */
 #define ADPLLJ_CLKCTRL			0x4
 #define ADPLLJ_TENABLE			0x8
 #define ADPLLJ_TENABLEDIV		0xC
-#define ADPLLJ_M2NDIV			0x10
-#define ADPLLJ_MN2DIV			0x14
-#define ADPLLJ_STATUS			0x24
+#define ADPLLJ_M2NDIV				0x10
+#define ADPLLJ_MN2DIV				0x14
+#define ADPLLJ_STATUS				0x24
 
 /* ADPLLJ register values */
 #define ADPLLJ_CLKCTRL_HS2		0x00000801 /* HS2 mode, TINT2 = 1 */
