@@ -44,12 +44,12 @@ _start: b	reset
 
 _undefined_instruction: .word undefined_instruction
 _software_interrupt:	.word software_interrupt
-_prefetch_abort:	.word prefetch_abort
-_data_abort:		.word data_abort
-_not_used:		.word not_used
-_irq:			.word irq
-_fiq:			.word fiq
-_pad:			.word 0x12345678 /* now 16*4=64 */
+_prefetch_abort:		.word prefetch_abort
+_data_abort:			.word data_abort
+_not_used:			.word not_used
+_irq:				.word irq
+_fiq:				.word fiq
+_pad:				.word 0x12345678 /* now 16*4=64 */
 .global _end_vect
 _end_vect:
 

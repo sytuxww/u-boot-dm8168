@@ -186,6 +186,8 @@ static void install_auto_complete_handler(const char *cmd,
 	cmdtp->complete = complete;
 }
 
+/* 添加需要自动完成的命令 */
+/* 添加之后再命令行中只需要输入一部分指令即可完成命令匹配 */
 void install_auto_complete(void)
 {
 #if defined(CONFIG_CMD_EDITENV)
@@ -376,6 +378,7 @@ int cmd_auto_complete(const char *const prompt, char *buf, int *np, int *colp)
 	strcpy(tmp_buf, buf);
 
 	/* separate into argv */
+	/* 将输入的字符拆分为不同的参数 */
 	argc = make_argv(tmp_buf, sizeof(argv)/sizeof(argv[0]), argv);
 
 	/* do the completion and return the possible completions */
