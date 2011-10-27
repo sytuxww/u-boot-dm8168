@@ -326,5 +326,11 @@ extern unsigned int boot_flash_type;
 /* Unsupported features */
 #undef CONFIG_USE_IRQ
 
+
+
+#define CONFIG_CMDLINE_EDITING
+#define CONFIG_AUTO_COMPLETE
+
+
 #endif	  /* ! __CONFIG_TI816X_EVM_H */
 
