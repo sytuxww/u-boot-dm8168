@@ -151,6 +151,7 @@ static int check_short_pattern(uint8_t *buf, struct nand_bbt_descr *td)
  * Read the bad block table starting from page.
  *
  */
+ /* 从起始页读取bbt表 */
 static int read_bbt(struct mtd_info *mtd, uint8_t *buf, int page, int num,
 		    int bits, int offs, int reserved_block_code)
 {
@@ -220,6 +221,7 @@ static int read_bbt(struct mtd_info *mtd, uint8_t *buf, int page, int num,
  * Read the bad block table for all chips starting at a given page
  * We assume that the bbt bits are in consecutive order.
 */
+/* 从一个给定的页读取bbt信息 */
 static int read_abs_bbt(struct mtd_info *mtd, uint8_t *buf, struct nand_bbt_descr *td, int chip)
 {
 	struct nand_chip *this = mtd->priv;
@@ -380,6 +382,7 @@ static int scan_block_fast(struct mtd_info *mtd, struct nand_bbt_descr *bd,
  * Create a bad block table by scanning the device
  * for the given good/bad block identify pattern
  */
+ /* 创建bbt信息表 */
 static int create_bbt(struct mtd_info *mtd, uint8_t *buf,
 	struct nand_bbt_descr *bd, int chip)
 {
@@ -787,6 +790,10 @@ static inline int nand_memory_bbt(struct mtd_info *mtd, struct nand_bbt_descr *b
  * Update is necessary if one of the tables is missing or the
  * version nr. of one table is less than the other
 */
+/* 此函数通过检查read_bbt函数的返回值创建或者更新bbt信息。
+ * 如果在芯片或者设备中没有发现bbt则创建。
+ * 如果bbt信息已经丢失或者版本低于现在则更新bbt信息。
+ */
 static int check_create(struct mtd_info *mtd, uint8_t *buf, struct nand_bbt_descr *bd)
 {
 	int i, chips, writeops, chipsel, res;
@@ -875,6 +882,7 @@ static int check_create(struct mtd_info *mtd, uint8_t *buf, struct nand_bbt_desc
 			read_abs_bbt(mtd, buf, rd2, chipsel);
 
 		/* Write the bad block table to the device ? */
+		/* 将bbt信息写入设备中 */
 		if ((writeops & 0x01) && (td->options & NAND_BBT_WRITE)) {
 			res = write_bbt(mtd, buf, td, md, chipsel);
 			if (res < 0)
@@ -882,6 +890,7 @@ static int check_create(struct mtd_info *mtd, uint8_t *buf, struct nand_bbt_desc
 		}
 
 		/* Write the mirror bad block table to the device ? */
+		/* 将镜像坏块表写入设备中 */
 		if ((writeops & 0x02) && md && (md->options & NAND_BBT_WRITE)) {
 			res = write_bbt(mtd, buf, md, td, chipsel);
 			if (res < 0)
@@ -1087,6 +1096,10 @@ int nand_update_bbt(struct mtd_info *mtd, loff_t offs)
 
 /* Define some generic bad / good block scan pattern which are used
  * while scanning a device for factory marked good / bad blocks. */
+ /* 
+  * 定义一些通用的坏块/好块扫描样式，主要用于扫描一些设备出厂标志的
+  * 坏块标志
+  */
 static uint8_t scan_ff_pattern[] = { 0xff, 0xff };
 
 static struct nand_bbt_descr smallpage_memorybased = {
@@ -1126,8 +1139,10 @@ static struct nand_bbt_descr agand_flashbased = {
 	.pattern = scan_agand_pattern
 };
 
-/* Generic flash bbt decriptors
-*/
+/* 
+ * Generic flash bbt decriptors
+ * 通用flash bbt 描述
+ */
 static uint8_t bbt_pattern[] = {'B', 'b', 't', '0' };
 static uint8_t mirror_pattern[] = {'1', 't', 'b', 'B' };
 

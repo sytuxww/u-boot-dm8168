@@ -2610,7 +2610,12 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 
 	/* Select the device */
 	chip->select_chip(mtd, 0);
-
+	
+//----------------------------------------------------------------------//
+//
+//			读取flash的设备ID和生产厂家
+//
+//----------------------------------------------------------------------//
 	/*
 	 * Reset the chip, required by some chips (e.g. Micron MT29FxGxxxxx)
 	 * after power-up
@@ -2644,6 +2649,11 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 		return ERR_PTR(-ENODEV);
 	}
 
+//----------------------------------------------------------------//
+//
+//		根据读取的设备ID在nand_flash_ids数组中寻找合适的type
+//
+//----------------------------------------------------------------//
 	/* Lookup the flash id */
 	for (i = 0; nand_flash_ids[i].name != NULL; i++) {
 		if (dev_id == nand_flash_ids[i].id) {
@@ -2660,6 +2670,11 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 
 	chip->chipsize = (uint64_t)type->chipsize << 20;
 
+//-------------------------------------------------------------------------//
+//
+//		根据查询的到type设置mtd结构体相关信息
+//
+//-------------------------------------------------------------------------//
 	/* Newer devices have all the information in additional id bytes */
 	if (!type->pagesize) {
 		int extid;
@@ -2698,6 +2713,7 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 	/*
 	 * Check, if buswidth is correct. Hardware drivers should set
 	 * chip correct !
+	 * 检查总线宽度是否正确，如不正确应重新设置。
 	 */
 	if (busw != (chip->options & NAND_BUSWIDTH_16)) {
 		printk(KERN_INFO "NAND device: Manufacturer ID:"
@@ -2778,6 +2794,7 @@ int nand_scan_ident(struct mtd_info *mtd, int maxchips)
 	struct nand_flash_dev *type;
 
 	/* Get buswidth to select the correct functions */
+	//TODO 这里有个bug，只能设置为16位总线，因为判断是在nand_get_flash_type()函数中执行的。
 	busw = chip->options & NAND_BUSWIDTH_16;
 	/* Set the default functions */
 	nand_set_defaults(chip, busw);

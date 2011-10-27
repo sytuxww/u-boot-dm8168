@@ -64,6 +64,9 @@ static void nand_init_chip(struct mtd_info *mtd, struct nand_chip *nand,
 			 * Add MTD device so that we can reference it later
 			 * via the mtdcore infrastructure (e.g. ubi).
 			 */
+
+			/* 添加进MTD设备，这样将可以在文件系统操作 */
+
 			sprintf(dev_name[i], "nand%d", i);
 			mtd->name = dev_name[i++];
 			add_mtd_device(mtd);
