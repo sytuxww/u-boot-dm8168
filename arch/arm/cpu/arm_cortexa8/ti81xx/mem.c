@@ -54,7 +54,7 @@ struct gpmc *gpmc_cfg;
 
 #if defined(CONFIG_CMD_NAND)
 
-//#if defined(CONFIG_NAND_MICRON)
+#if defined(CONFIG_NAND_MICRON)||(CONFIG_NAND_AUTO)
 static const u32 gpmc_m_nand_micron[GPMC_MAX_REG] = {
 	M_NAND_GPMC_CONFIG1,
 	M_NAND_GPMC_CONFIG2,
@@ -63,9 +63,9 @@ static const u32 gpmc_m_nand_micron[GPMC_MAX_REG] = {
 	M_NAND_GPMC_CONFIG5,
 	M_NAND_GPMC_CONFIG6, 0
 };
-//#endif
+#endif
 
-//#if defined(CONFIG_NAND_SAMSUNG)
+#if defined(CONFIG_NAND_SAMSUNG)||(CONFIG_NAND_AUTO)
 static const u32 gpmc_m_nand_samsung[GPMC_MAX_REG] = {
 	SMNAND_GPMC_CONFIG1,
 	SMNAND_GPMC_CONFIG2,
@@ -74,10 +74,11 @@ static const u32 gpmc_m_nand_samsung[GPMC_MAX_REG] = {
 	SMNAND_GPMC_CONFIG5,
 	SMNAND_GPMC_CONFIG6, 0
 };
-//#endif
+#endif
 #define GPMC_CS 0
 #endif
 
+#if defined(CONFIG_NAND_AUTO)
 /* 
  * 函数: enable_gpmc_cs_config_type
  *
@@ -113,6 +114,7 @@ void enable_gpmc_cs_config_type(const u32 nand_maf_id)
 	}
 	enable_gpmc_cs_config(gpmc_config, &gpmc_cfg->cs[0], base, size);
 }
+#endif
 /* 
  * 函数: enable_gpmc_cs_config
  *
@@ -214,7 +216,14 @@ void gpmc_init(void)
 #if defined(CONFIG_CMD_NAND)	/* CS 0 */
 	//gpmc_config = gpmc_m_nand;
 	/* 默认为美光的设置 */
+
+#if defined(CONFIG_NAND_MICRON)
 	gpmc_config = gpmc_m_nand_micron;
+#endif
+
+#if defined(CONFIG_NAND_SAMSUNG)
+	gpmc_config = gpmc_m_nand_samsung;
+#endif
 
 	base = PISMO1_NAND_BASE;
 	size = PISMO1_NAND_SIZE;

@@ -214,9 +214,11 @@
 							/* CS0 */
 # define CONFIG_SYS_MAX_NAND_DEVICE		1		/* Max number of NAND */
 
-# define CONFIG_NAND_MICRON    //for 美光NAND MT29F2G16
-# define CONFIG_NAND_SAMSUNG	 //for 三星NAND K9F2G08U0B 
-
+//# define CONFIG_NAND_AUTO			//auto config nand 
+#ifndef CONFIG_NAND_AUTO
+# define CONFIG_NAND_MICRON    		//for 美光NAND MT29F2G16
+//# define CONFIG_NAND_SAMSUNG	 	//for 三星NAND K9F2G08U0B 
+#endif
 # define CONFIG_NAND_ENV
 #endif							/* devices */
 

@@ -2706,11 +2706,14 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 		printk(KERN_WARNING "NAND bus width %d instead %d bit\n",
 		       (chip->options & NAND_BUSWIDTH_16) ? 16 : 8,
 		       busw ? 16 : 8);
+#if defined(CONFIG_NAND_AUTO)
 		//TODO add more nand flash 
 		//base on maf_id reinit ti81xx_gpmc
 		printk(KERN_INFO "Reconfig NAND....\n");
 		enable_gpmc_cs_config_type(*maf_id);
-		//return ERR_PTR(-EINVAL);
+#else
+		return ERR_PTR(-EINVAL);
+#endif
 	}
 
 	/* Calculate the address shift from the page size */
