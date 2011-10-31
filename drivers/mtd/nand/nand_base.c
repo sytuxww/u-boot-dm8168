@@ -533,6 +533,8 @@ void nand_wait_ready(struct mtd_info *mtd)
  *
  * Send command to NAND device. This function is used for small page
  * devices (256/512 Bytes per page)
+ * 发送命令至nand设备。主要用于小页设置(256/512Bytes每页)。
+ * 此函数中会调用底层提供的cmd_ctrl()函数，完成最后的命令发送功能。
  */
 static void nand_command(struct mtd_info *mtd, unsigned int command,
 			 int column, int page_addr)
@@ -2551,6 +2553,8 @@ static void nand_resume(struct mtd_info *mtd)
 
 /*
  * Set default functions
+ * 设置默认的功能函数，包括cmdfunc、select_chip、读写函数。
+ * 这里设置读写函数中用到了busw参数，即为nand芯片的总线宽度。
  */
 static void nand_set_defaults(struct nand_chip *chip, int busw)
 {
@@ -2800,6 +2804,9 @@ int nand_scan_ident(struct mtd_info *mtd, int maxchips)
 	nand_set_defaults(chip, busw);
 
 	/* Read the flash type */
+	/* 读取flash类型，除了在board_nand_init()中初始化的函数其余均为nand_set_defaults()
+	 * 设置的默认处理函数
+	 */
 	type = nand_get_flash_type(mtd, chip, busw, &nand_maf_id);
 
 	if (IS_ERR(type)) {
@@ -2842,6 +2849,8 @@ int nand_scan_ident(struct mtd_info *mtd, int maxchips)
  * This is the second phase of the normal nand_scan() function. It
  * fills out all the uninitialized function pointers with the defaults
  * and scans for a bad block table if appropriate.
+ * 这是nand_scan()函数的第二部分，填充了未初始化的所有函数指针并扫描坏块
+ * 表。
  */
 int nand_scan_tail(struct mtd_info *mtd)
 {
@@ -2858,6 +2867,7 @@ int nand_scan_tail(struct mtd_info *mtd)
 
 	/*
 	 * If no default placement scheme is given, select an appropriate one
+	 * 如果没有默认的值，将选择一个合适的赋值。
 	 */
 	if (!chip->ecc.layout) {
 		switch (mtd->oobsize) {
