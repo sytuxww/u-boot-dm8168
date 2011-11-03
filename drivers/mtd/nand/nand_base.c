@@ -2790,6 +2790,9 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
  * reads the flash ID and sets up MTD fields accordingly.
  *
  * The mtd->owner field must be set to the module of the caller.
+ *
+ * 这是通常nand_scan()功能的第一部分，读取flash id并且设置MTD对应区域。
+ * 
  */
 int nand_scan_ident(struct mtd_info *mtd, int maxchips)
 {
@@ -2895,6 +2898,8 @@ int nand_scan_tail(struct mtd_info *mtd)
 	/*
 	 * check ECC mode, default to software if 3byte/512byte hardware ECC is
 	 * selected and we have 256 byte pagesize fallback to software ECC
+	 *
+	 * 检查ECC模式，如果没有设置某些函数则将其赋值为默认函数
 	 */
 
 	switch (chip->ecc.mode) {
@@ -3003,6 +3008,7 @@ int nand_scan_tail(struct mtd_info *mtd)
 	/*
 	 * Set the number of read / write steps for one page depending on ECC
 	 * mode
+	 * 根据ECC模式设置一页读写的步数。
 	 */
 	chip->ecc.steps = mtd->writesize / chip->ecc.size;
 	if(chip->ecc.steps * chip->ecc.size != mtd->writesize) {
@@ -3088,6 +3094,8 @@ int nand_scan_tail(struct mtd_info *mtd)
  * filled with the appropriate values.
  * The mtd->owner field must be set to the module of the caller
  *
+ * 填充未初始化的功能函数指针。
+ * 读取FLASH ID填充mtd/chip结构体为合适的值。
  */
 int nand_scan(struct mtd_info *mtd, int maxchips)
 {

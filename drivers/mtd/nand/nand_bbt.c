@@ -382,7 +382,7 @@ static int scan_block_fast(struct mtd_info *mtd, struct nand_bbt_descr *bd,
  * Create a bad block table by scanning the device
  * for the given good/bad block identify pattern
  */
- /* 创建bbt信息表 */
+ /* 通过给定的好坏块识别模板扫描整个设备，创建bbt信息表 */
 static int create_bbt(struct mtd_info *mtd, uint8_t *buf,
 	struct nand_bbt_descr *bd, int chip)
 {
@@ -442,7 +442,7 @@ static int create_bbt(struct mtd_info *mtd, uint8_t *buf,
 
 		if (ret < 0)
 			return ret;
-
+		/* 根据扫描结果更新bbt */
 		if (ret) {
 			this->bbt[i >> 3] |= 0x03 << (i & 0x6);
 			MTDDEBUG (MTD_DEBUG_LEVEL0,
@@ -742,7 +742,7 @@ static int write_bbt(struct mtd_info *mtd, uint8_t *buf,
 		res = nand_erase_nand(mtd, &einfo, 1);
 		if (res < 0)
 			goto outerr;
-
+		/* 写入bbt信息 */
 		res = scan_write_bbt(mtd, to, len, buf, &buf[len]);
 		if (res < 0)
 			goto outerr;
