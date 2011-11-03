@@ -622,6 +622,7 @@ static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 				{
 					puts(i2c_dev[i].devices);
 					puts(i2c_dev[i].dev_describe);
+					break;
 				}
 			}
 			if(i2c_dev[i].devices == NULL)
