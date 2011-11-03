@@ -594,7 +594,7 @@ static struct i2c_devices i2c_dev[]=
  */
 static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
-	int j;
+	int j,i;
 #if defined(CONFIG_SYS_I2C_NOPROBES)
 	int k, skip;
 	uchar bus = GET_BUS_NUM;
@@ -615,7 +615,7 @@ static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 #endif
 		if (i2c_probe(j) == 0){
 			printf(" %02X ", j);
-			for(int i;i2c_dev[i].devices != NULL;i++)
+			for( i=0;i2c_dev[i].devices != NULL;i++)
 			{
 				if(j == i2c_dev[i].dev_addr)
 				{
