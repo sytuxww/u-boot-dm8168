@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 æ— é”¡ä¿¡æ·ç”µæ°”æœ‰é™å…¬å¸
+ * (C) Copyright 2011 ÎÞÎýÐÅ½ÝµçÆøÓÐÏÞ¹«Ë¾
  *		luwei <sytu_xww@yahoo.com.cn>
  *
  * (C) Copyright 2010 Texas Instruments, <www.ti.com>
@@ -28,10 +28,10 @@
  * MA 02111-1307 USA
  */
 
-// 0  2011å¹´10æœˆ12æ—¥  æ·»åŠ äº†ä¸‰æ˜Ÿå’Œç¾Žå…‰çš„ä¸¤ç§NANDçš„é€‰æ‹©ï¼Œä¸¤è€…å·®å¼‚ä¸ºç¾Žå…‰ä¸º16ä½æ•°æ®ï¼Œè€Œ
-//					  ä¸‰æ˜Ÿä¸º8ä½æ•°æ®çº¿ï¼Œä¸”ä¸¤è€…çš„æ—¶åºé€‰æ‹©ä¸ä¸€æ ·ã€‚
-// 1  2011å¹´10æœˆ21æ—¥  ä¿®æ”¹ä¸‰æ˜Ÿå’Œç¾Žå…‰çš„é…ç½®ï¼Œå¹¶æ·»åŠ enable_gpmc_cs_config_type(),ç»™nand_base.c
-//						æä¾›APIï¼Œç”¨äºŽæ£€æµ‹NANDçš„ç”Ÿäº§IDå¹¶æ ¹æ®IDé€‰æ‹©ä¸åŒçš„æ—¶åºé…ç½®ï¼Œä»¥æ”¯æŒå¤šä¸ªNANDã€‚
+// 0  2011Äê10ÔÂ12ÈÕ  Ìí¼ÓÁËÈýÐÇºÍÃÀ¹âµÄÁ½ÖÖNANDµÄÑ¡Ôñ£¬Á½Õß²îÒìÎªÃÀ¹âÎª16Î»Êý¾Ý£¬¶ø
+//					  ÈýÐÇÎª8Î»Êý¾ÝÏß£¬ÇÒÁ½ÕßµÄÊ±ÐòÑ¡Ôñ²»Ò»Ñù¡£
+// 1  2011Äê10ÔÂ21ÈÕ  ÐÞ¸ÄÈýÐÇºÍÃÀ¹âµÄÅäÖÃ£¬²¢Ìí¼Óenable_gpmc_cs_config_type(),¸ønand_base.c
+//						Ìá¹©API£¬ÓÃÓÚ¼ì²âNANDµÄÉú²úID²¢¸ù¾ÝIDÑ¡Ôñ²»Í¬µÄÊ±ÐòÅäÖÃ£¬ÒÔÖ§³Ö¶à¸öNAND¡£
 #include <common.h>
 #include <asm/io.h>
 #include <asm/arch/cpu.h>
@@ -79,15 +79,15 @@ static const u32 gpmc_m_nand_samsung[GPMC_MAX_REG] = {
 #endif
 
 /* 
- * å‡½æ•°: enable_gpmc_cs_config_type
+ * º¯Êý: enable_gpmc_cs_config_type
  *
- * å‚æ•°: 
- *		const u32 nand_type  NANDåŽ‚å®¶
+ * ²ÎÊý: 
+ *		const u32 nand_type  NAND³§¼Ò
  *
- * è¿”å›žå€¼: æ— 
+ * ·µ»ØÖµ: ÎÞ
  *
- * æè¿°:
- * 		æ ¹æ®NANDåŽ‚å®¶åž‹å·é€‰æ‹©ä¸åŒçš„é…ç½®å‚æ•°é‡æ–°é…ç½®GPMCã€‚
+ * ÃèÊö:
+ * 		¸ù¾ÝNAND³§¼ÒÐÍºÅÑ¡Ôñ²»Í¬µÄÅäÖÃ²ÎÊýÖØÐÂÅäÖÃGPMC¡£
  */
 void enable_gpmc_cs_config_type(const u32 nand_maf_id)
 {
@@ -114,18 +114,18 @@ void enable_gpmc_cs_config_type(const u32 nand_maf_id)
 	enable_gpmc_cs_config(gpmc_config, &gpmc_cfg->cs[0], base, size);
 }
 /* 
- * å‡½æ•°: enable_gpmc_cs_config
+ * º¯Êý: enable_gpmc_cs_config
  *
- * å‚æ•°: 
- *		const u32 *gpmc_config  GPMCå‚æ•°è®¾ç½®
- *		struct gpmc_cs *cs			CPUå¯„å­˜å™¨
- *		u32 base								åŸºåœ°å€
- *		u32 size								å¤§å°
+ * ²ÎÊý: 
+ *		const u32 *gpmc_config  GPMC²ÎÊýÉèÖÃ
+ *		struct gpmc_cs *cs			CPU¼Ä´æÆ÷
+ *		u32 base								»ùµØÖ·
+ *		u32 size								´óÐ¡
  *
- * è¿”å›žå€¼: æ— 
+ * ·µ»ØÖµ: ÎÞ
  *
- * æè¿°:
- * 		æ ¹æ®gpmc_configçš„å‚æ•°è®¾ç½®ï¼Œå†™å…¥GPMCå¯¹åº”çš„cså¯„å­˜å™¨ï¼Œå¹¶è®¾ç½®NANDåŸºåœ°å€å’Œå¤§å°ã€‚
+ * ÃèÊö:
+ * 		¸ù¾Ýgpmc_configµÄ²ÎÊýÉèÖÃ£¬Ð´ÈëGPMC¶ÔÓ¦µÄcs¼Ä´æÆ÷£¬²¢ÉèÖÃNAND»ùµØÖ·ºÍ´óÐ¡¡£
  */
 void enable_gpmc_cs_config(const u32 *gpmc_config, struct gpmc_cs *cs, u32 base,
 			u32 size)
@@ -140,32 +140,32 @@ void enable_gpmc_cs_config(const u32 *gpmc_config, struct gpmc_cs *cs, u32 base,
 	writel(gpmc_config[4], &cs->config5);
 	writel(gpmc_config[5], &cs->config6);
 	/* Enable the config */
-	//è®¾ç½®NANDåŸºåœ°å€å’Œå¤§å°ï¼Œå¹¶ä½¿èƒ½
+	//ÉèÖÃNAND»ùµØÖ·ºÍ´óÐ¡£¬²¢Ê¹ÄÜ
 	writel((((size & 0xF) << 8) | ((base >> 24) & 0x3F) |
 		(1 << 6)), &cs->config7);
 	sdelay(2000);
 }
 
 /* 
- * å‡½æ•°: gpmc_init
+ * º¯Êý: gpmc_init
  *
- * å‚æ•°: 
- *		æ— 
+ * ²ÎÊý: 
+ *		ÎÞ
  *
- * è¿”å›žå€¼: æ— 
+ * ·µ»ØÖµ: ÎÞ
  *
- * æè¿°:
- * 		è®¾ç½®GPMC
+ * ÃèÊö:
+ * 		ÉèÖÃGPMC
  *		Init GPMC for x16, MuxMode (SDRAM in x32).
  * 		This code can only be executed from SRAM or SDRAM.
- * 		åˆå§‹åŒ–GPMCæ€»çº¿ï¼Œx16æ€»çº¿
+ * 		³õÊ¼»¯GPMC×ÜÏß£¬x16×ÜÏß
  *
- * TODO ä¿®æ”¹ä¸ºx8 for K9F2G08U0B 
+ * TODO ÐÞ¸ÄÎªx8 for K9F2G08U0B 
  */
 void gpmc_init(void)
 {
 	/* putting a blanket check on GPMC based on ZeBu for now */
-	/* GPMC_BASE = 0x50000000 gpmcçš„å¯„å­˜å™¨åœ°å€ */
+	/* GPMC_BASE = 0x50000000 gpmcµÄ¼Ä´æÆ÷µØÖ· */
 	gpmc_cfg = (struct gpmc *)GPMC_BASE;
 
 #ifdef CONFIG_NOR_BOOT
@@ -186,18 +186,18 @@ void gpmc_init(void)
 #endif
 	//-------------------------------------------------------------------//
 	//
-	//					å…¨å±€è®¾ç½® 
+	//					È«¾ÖÉèÖÃ 
 	//
 	//-------------------------------------------------------------------//
 	/* SIDLEMODE = 0x1 No-idle. An idle request is never acknowledged */
 	writel(0x00000008, &gpmc_cfg->sysconfig);
-	/* WAIT0EDGEDETECTIONSTATUS = 1 å¤ä½ */
+	/* WAIT0EDGEDETECTIONSTATUS = 1 ¸´Î» */
 	writel(0x00000100, &gpmc_cfg->irqstatus);
-	/* WAIT1EDGEDETECTIONENABLE = 1 ä½¿èƒ½è¾¹æ²¿è§¦å‘ä¸­æ–­wait1 */
+	/* WAIT1EDGEDETECTIONENABLE = 1 Ê¹ÄÜ±ßÑØ´¥·¢ÖÐ¶Ïwait1 */
 	writel(0x00000200, &gpmc_cfg->irqenable);
 	/* 
-	 * LIMITEDADDRESS = 1 é™åˆ¶åœ°å€ä½¿èƒ½ 
-	 * WRITEPROTECT = 1   WPç®¡è„šä¸ºé«˜
+	 * LIMITEDADDRESS = 1 ÏÞÖÆµØÖ·Ê¹ÄÜ 
+	 * WRITEPROTECT = 1   WP¹Ü½ÅÎª¸ß
 	 */
 	writel(0x00000012, &gpmc_cfg->config);
 	/*
@@ -208,12 +208,12 @@ void gpmc_init(void)
 
 	//-------------------------------------------------------------------//
 	//
-	//					è¯»å†™æ—¶åºè®¾ç½® 
+	//					¶ÁÐ´Ê±ÐòÉèÖÃ 
 	//
 	//-------------------------------------------------------------------//
 #if defined(CONFIG_CMD_NAND)	/* CS 0 */
 	//gpmc_config = gpmc_m_nand;
-	/* é»˜è®¤ä¸ºç¾Žå…‰çš„è®¾ç½® */
+	/* Ä¬ÈÏÎªÃÀ¹âµÄÉèÖÃ */
 	gpmc_config = gpmc_m_nand_micron;
 
 	base = PISMO1_NAND_BASE;
@@ -240,6 +240,7 @@ void gpmc_init(void)
 
 #endif
 }
+
 
 
 
