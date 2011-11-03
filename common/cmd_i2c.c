@@ -580,10 +580,10 @@ struct i2c_devices
 
 static struct i2c_devices i2c_dev[]=
 {
-	{0x18," TLV320AIC3x "," Audio Codec and Enhance Audio Quality "},
-	{0x20," PCF8575 "," IO Expander "},
-	{0x23," CPID "," CPLD "},
-	{0x50," CAT24C256WI-G "," eeprom "},
+	{0x18," TLV320AIC3x   ","   Audio Codec and Enhance Audio Quality\n"},
+	{0x20," PCF8575       ","   IO Expander\n"},
+	{0x23," CPID          ","   CPLD\n"},
+	{0x50," CAT24C256WI-G ","   eeprom\n"},
 	{0x00,NULL,NULL},
 };
 
@@ -600,7 +600,8 @@ static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	uchar bus = GET_BUS_NUM;
 #endif	/* NOPROBES */
 
-	puts ("Valid chip addresses:");
+	puts ("Valid chip addresses:\n");
+	puts ("ChipAddress			DevicesType			DevicesDescribe\n")
 	for (j = 0; j < 128; j++) {
 #if defined(CONFIG_SYS_I2C_NOPROBES)
 		skip = 0;
@@ -614,7 +615,7 @@ static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 			continue;
 #endif
 		if (i2c_probe(j) == 0){
-			printf(" %02X ", j);
+			printf("  0x%02X  ", j);
 			for( i=0;i2c_dev[i].devices != NULL;i++)
 			{
 				if(j == i2c_dev[i].dev_addr)
