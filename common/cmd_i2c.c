@@ -576,7 +576,7 @@ struct i2c_devices
 	char dev_addr;
 	char *devices;
 	char *dev_describe;
-}
+};
 
 static struct i2c_devices i2c_dev[]=
 {
@@ -585,7 +585,7 @@ static struct i2c_devices i2c_dev[]=
 	{0x23," CPID "," CPLD "},
 	{0x50," CAT24C256WI-G "," eeprom "},
 	{0x00,NULL,NULL},
-}
+};
 
 
 /*
