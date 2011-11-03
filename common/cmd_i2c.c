@@ -601,7 +601,7 @@ static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 #endif	/* NOPROBES */
 
 	puts ("Valid chip addresses:\n");
-	puts ("ChipAddress			DevicesType			DevicesDescribe\n")
+	puts ("ChipAddress			DevicesType			DevicesDescribe\n");
 	for (j = 0; j < 128; j++) {
 #if defined(CONFIG_SYS_I2C_NOPROBES)
 		skip = 0;
