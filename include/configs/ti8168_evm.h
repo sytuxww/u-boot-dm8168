@@ -216,8 +216,8 @@
 
 //# define CONFIG_NAND_AUTO			//auto config nand 
 #ifndef CONFIG_NAND_AUTO
-# define CONFIG_NAND_MICRON    		//for ç¾Žå…‰NAND MT29F2G16
-//# define CONFIG_NAND_SAMSUNG	 	//for ä¸‰æ˜ŸNAND K9F2G08U0B 
+# define CONFIG_NAND_MICRON    		//for ÃÀ¹âNAND MT29F2G16
+//# define CONFIG_NAND_SAMSUNG	 	//for ÈýÐÇNAND K9F2G08U0B 
 #endif
 # define CONFIG_NAND_ENV
 #endif							/* devices */
