@@ -571,6 +571,23 @@ mod_i2c_mem(cmd_tbl_t *cmdtp, int incrflag, int flag, int argc, char *argv[])
 	return 0;
 }
 
+struct i2c_devices
+{
+	char dev_addr;
+	char *devices;
+	char *dev_describe;
+}
+
+static struct i2c_devices i2c_dev[]=
+{
+	{0x18," TLV320AIC3x "," Audio Codec and Enhance Audio Quality "},
+	{0x20," PCF8575 "," IO Expander "},
+	{0x23," CPID "," CPLD "},
+	{0x50," CAT24C256WI-G "," eeprom "},
+	{0x00,NULL,NULL},
+}
+
+
 /*
  * Syntax:
  *	i2c probe {addr}{.0, .1, .2}
@@ -596,8 +613,17 @@ static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		if (skip)
 			continue;
 #endif
-		if (i2c_probe(j) == 0)
-			printf(" %02X", j);
+		if (i2c_probe(j) == 0){
+			printf(" %02X ", j);
+			for(int i;i2c_dev[i].devices != NULL;i++)
+			{
+				if(j == i2c_dev[i].dev_addr)
+				{
+					puts(i2c_dev[i].devices);
+					puts(i2c_dev[i].dev_describe);
+				}
+			}
+		}
 	}
 	putc ('\n');
 
