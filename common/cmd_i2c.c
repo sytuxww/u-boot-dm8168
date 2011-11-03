@@ -580,10 +580,10 @@ struct i2c_devices
 
 static struct i2c_devices i2c_dev[]=
 {
-	{0x18," TLV320AIC3x   ","   Audio Codec and Enhance Audio Quality\n"},
-	{0x20," PCF8575       ","   IO Expander\n"},
-	{0x23," CPID          ","   CPLD\n"},
-	{0x50," CAT24C256WI-G ","   eeprom\n"},
+	{0x18,"       TLV320AIC3x   ","       Audio Codec and Enhance Audio Quality\n"},
+	{0x20,"       PCF8575       ","       IO Expander\n"},
+	{0x23,"       CPID          ","       CPLD\n"},
+	{0x50,"       CAT24C256WI-G ","       eeprom\n"},
 	{0x00,NULL,NULL},
 };
 
@@ -601,7 +601,7 @@ static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 #endif	/* NOPROBES */
 
 	puts ("Valid chip addresses:\n");
-	puts ("ChipAddress			DevicesType			DevicesDescribe\n");
+	puts ("ChipAddress          DevicesType          DevicesDescribe\n");
 	for (j = 0; j < 128; j++) {
 #if defined(CONFIG_SYS_I2C_NOPROBES)
 		skip = 0;
@@ -624,6 +624,8 @@ static int do_i2c_probe (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 					puts(i2c_dev[i].dev_describe);
 				}
 			}
+			if(i2c_dev[i].devices == NULL)
+				putc('\n');
 		}
 	}
 	putc ('\n');
