@@ -390,14 +390,14 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 				&ds->regs->channel[ds->slave.cs].chconf);
 	}
 
-	/* Keep writing and reading 1 byte until done */
+	/* 读取或写入1字节，知道完成所有 */
 	for (i = 0; i < len; i++) {
 
 		/* wait till TX register is empty (TXS == 1) */
 		while ((readl(&ds->regs->channel[ds->slave.cs].chstat) &
 										 OMAP3_MCSPI_CHSTAT_TXS) == 0);
 
-		/* Write the data */
+		/* 写数据 */
 		if (txp) {
 			writel(*txp, &ds->regs->channel[ds->slave.cs].tx);
 			txp++;
@@ -409,7 +409,7 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 		while ((readl(&ds->regs->channel[ds->slave.cs].chstat) &
 										 OMAP3_MCSPI_CHSTAT_RXS) == 0);
 
-		/* Read the data */
+		/* 读数据 */
 		if  (rxp) {
 			*rxp = readl(&ds->regs->channel[ds->slave.cs].rx);
 			rxp++;

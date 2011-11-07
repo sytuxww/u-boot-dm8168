@@ -31,13 +31,13 @@
 #define WINBOND_SR_WIP		(1 << 0)	/* Write-in-Progress */
 
 struct winbond_spi_flash_params {
-	uint16_t	id;
+	uint16_t		id;
 	/* Log2 of page size in power-of-two mode */
 	uint8_t		l2_page_size;
-	uint16_t	pages_per_sector;
-	uint16_t	sectors_per_block;
+	uint16_t		pages_per_sector;
+	uint16_t		sectors_per_block;
 	uint8_t		nr_blocks;
-	const char	*name;
+	const char		*name;
 };
 
 /* spi_flash needs to be first so upper layers can free() it */
@@ -54,31 +54,55 @@ to_winbond_spi_flash(struct spi_flash *flash)
 
 static const struct winbond_spi_flash_params winbond_spi_flash_table[] = {
 	{
-		.id			= WINBOND_ID_W25X16,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
+		.id						= WINBOND_ID_W25X16,
+		.l2_page_size			= 8,
+		.pages_per_sector		= 16,
 		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
-		.name			= "W25X16",
+		.nr_blocks				= 32,
+		.name					= "W25X16",
 	},
 	{
-		.id			= WINBOND_ID_W25X32,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
+		.id						= WINBOND_ID_W25X32,
+		.l2_page_size			= 8,
+		.pages_per_sector		= 16,
 		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
-		.name			= "W25X32",
+		.nr_blocks				= 64,
+		.name					= "W25X32",
 	},
 	{
-		.id			= WINBOND_ID_W25X64,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
+		.id						= WINBOND_ID_W25X64,
+		.l2_page_size			= 8,
+		.pages_per_sector		= 16,
 		.sectors_per_block	= 16,
-		.nr_blocks		= 128,
-		.name			= "W25X64",
+		.nr_blocks				= 128,
+		.name					= "W25X64",
 	},
 };
 
+/******************************************************************************
+** 函数名	  :	 winbond_wait_ready
+**
+** 功能描述 :  等待winbond flash准备好，检测状态寄存器，仅仅检测timeout时间。
+**
+** 输　入   : 
+**　　    		struct spi_flash *flash spi_flash结构体
+**				unsigned long timeout	超时时间
+**				
+** 输　出: 
+**　　　  		无
+** 全局变量:
+**
+** 调用模块:
+**				spi_xfer()		收发一定的数据
+**				get_timer()	得到系统时间
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月7日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 static int winbond_wait_ready(struct spi_flash *flash, unsigned long timeout)
 {
 	struct spi_slave *spi = flash->spi;
@@ -141,6 +165,33 @@ static void winbond_build_address(struct winbond_spi_flash *stm, u8 *cmd, u32 of
 	cmd[2] = byte_addr;
 }
 
+/******************************************************************************
+** 函数名	  :	 winbond_read_fast
+**	
+** 功能描述 :  winbond系列的SPI Flash的快速读函数。
+**
+** 输　入   : 
+**　　    		struct spi_flash *flash spi_flash结构体
+**				u32 offset					偏移地址
+**				size_t len					长度
+**				const void *buf			数据缓存
+**				
+** 输　出: 
+**　　　  		无
+** 全局变量:
+**
+** 调用模块:
+**				to_winbond_spi_flash()		将spi_flash结构体转换为winbond_spi_flash
+**				winbond_build_address()		根据offset组成命令中的地址
+**				spi_flash_read_common()		读
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月7日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 static int winbond_read_fast(struct spi_flash *flash,
 		u32 offset, size_t len, void *buf)
 {
@@ -154,6 +205,34 @@ static int winbond_read_fast(struct spi_flash *flash,
 	return spi_flash_read_common(flash, cmd, sizeof(cmd), buf, len);
 }
 
+/******************************************************************************
+** 函数名	  :	 winbond_write
+** 功能描述 :  winbond系列的SPI Flash的写函数，写入一定的数据到flash指定偏移值，
+**				 长度。
+** 输　入   : 
+**　　    		struct spi_flash *flash spi_flash结构体
+**				u32 offset					偏移地址
+**				size_t len					长度
+**				const void *buf			数据缓存
+**				
+** 输　出: 
+**　　　  		无
+** 全局变量:
+**
+** 调用模块:
+**				spi_claim_bus()		设置对应的spi总线
+**				spi_flash_cmd()		发送spi命令
+**				spi_flash_cmd_write()发送命令，并写入一定的数据
+**				winbond_wait_ready()	等待设备
+**				spi_release_bus()		释放总线
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月7日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 static int winbond_write(struct spi_flash *flash,
 		u32 offset, size_t len, const void *buf)
 {
@@ -221,6 +300,34 @@ out:
 	return ret;
 }
 
+/******************************************************************************
+** 函数名	  :	 winbond_erase
+**
+** 功能描述 :  winbond擦除命令。
+**
+** 输　入   : 
+**　　    		struct spi_flash *flash spi_flash结构体
+**				u32 offset					偏移地址
+**				size_t len					长度
+**				
+** 输　出: 
+**　　　  		0 擦除正确		<0 擦除错误
+** 全局变量:
+**
+** 调用模块:
+**				spi_claim_bus()			设置spi总线
+**				winbond_build_address()	产生地址
+**				spi_flash_cmd()			写入flash命令
+**				spi_flash_cmd_write()	带命令的写入
+**				winbond_wait_ready()		等待设备
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月7日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 int winbond_erase(struct spi_flash *flash, u32 offset, size_t len)
 {
 	struct winbond_spi_flash *stm = to_winbond_spi_flash(flash);
@@ -286,6 +393,30 @@ out:
 	return ret;
 }
 
+
+/******************************************************************************
+** 函数名	  :	 spi_flash_probe_winbond
+**
+** 功能描述 :  winbond flash的探测函数，根据incode的值查询winbond_spi_flash_table
+**				 的id，如果查询到设置spi_flash结构体中的变量,以及读写函数。
+**
+** 输　入   : 
+**　　    		struct spi_slave *spi	spi总线
+**				u8 *idcode					JCDEC ID
+**				
+** 输　出: 
+**　　　  		struct spi_flash	
+** 全局变量:
+**
+** 调用模块:
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月7日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 {
 	const struct winbond_spi_flash_params *params;
