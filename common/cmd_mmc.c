@@ -26,8 +26,36 @@
 #include <mmc.h>
 
 #ifndef CONFIG_GENERIC_MMC
+
 static int curr_device = -1;
 
+/******************************************************************************
+** 函数名	  :	 do_mmc()
+**
+** 功能描述 :  mmc命令，初始化mmc卡。
+**				 mmc init
+**				 mmc device
+**
+** 输　入   : 
+**　　    		 命令参数表
+**				
+** 输　出: 
+**　　　  		1	 成功
+**				0   失败
+** 全局变量:
+**
+** 调用模块:
+**				mmc_legacy_init()		mmc底层初始化(omap3_mmc.c)			
+**				cmd_usage()			输出命令的使用说明(command.c)
+**				simple_strtoul()		字符串转换为特定的数字()
+**				
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月17日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 int do_mmc (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
 	int dev;
@@ -49,7 +77,7 @@ int do_mmc (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 			cmd_usage(cmdtp);
 			return 1;
 		}
-
+		/* 调用底层的mmc初始化函数 */
 		if (mmc_legacy_init(dev) != 0) {
 			puts("No MMC card found\n");
 			return 1;

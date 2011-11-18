@@ -125,7 +125,7 @@ unsigned char mmc_clock_config(unsigned int iclk, unsigned short clk_div)
 unsigned char mmc_init_setup(void)
 {
 	unsigned int reg_val;
-
+	/* mmc板级初始化 */
 	mmc_board_init();
 
 	writel(readl(&mmc_base->sysconfig) | MMC_SOFTRESET,
@@ -144,14 +144,14 @@ unsigned char mmc_init_setup(void)
 	writel(CTPL_MMC_SD | reg_val | WPP_ACTIVEHIGH | CDP_ACTIVEHIGH |
 		MIT_CTO | DW8_1_4BITMODE | MODE_FUNC | STR_BLOCK |
 		HR_NOHOSTRESP | INIT_NOINIT | NOOPENDRAIN, &mmc_base->con);
-
+	/* 配置mmc时钟 */
 	mmc_clock_config(CLK_INITSEQ, 0);
 	writel(readl(&mmc_base->hctl) | SDBP_PWRON, &mmc_base->hctl);
 
 	writel(IE_BADA | IE_CERR | IE_DEB | IE_DCRC | IE_DTO | IE_CIE |
 		IE_CEB | IE_CCRC | IE_CTO | IE_BRR | IE_BWR | IE_TC | IE_CC,
 		&mmc_base->ie);
-
+	/* mmc初始化序列 */
 	mmc_init_stream();
 	return 1;
 }
@@ -436,6 +436,29 @@ unsigned char omap_mmc_read_sect(unsigned int start_sec, unsigned int num_bytes,
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 configure_mmc()
+**
+** 功能描述 :  omap3底层mmc配置函数。
+**
+** 输　入   : 
+**　　    		 			
+** 输　出: 
+**　　　  		1	 失败
+**				0   成功
+** 全局变量:
+**
+** 调用模块:
+**				configure_mmc()			mmc底层初始化(omap3_mmc.c)			
+**				fat_register_device()	注册fat设备(fat.h)			
+**				
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月17日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char configure_mmc(mmc_card_data *mmc_card_cur)
 {
 	unsigned char ret_val;
@@ -443,13 +466,14 @@ unsigned char configure_mmc(mmc_card_data *mmc_card_cur)
 	unsigned int trans_clk, trans_fact, trans_unit, retries = 2;
 	unsigned char trans_speed;
 	mmc_resp_t mmc_resp;
-
+	/* mmc初始化设置 */
 	ret_val = mmc_init_setup();
 
 	if (ret_val != 1)
 		return ret_val;
 
 	do {
+		/* mmc探测 */
 		ret_val = mmc_detect_card(mmc_card_cur);
 		retries--;
 	} while ((retries > 0) && (ret_val != 1));
@@ -513,22 +537,45 @@ unsigned long mmc_bread(int dev_num, unsigned long blknr, lbaint_t blkcnt,
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_legacy_init()
+**
+** 功能描述 :  调用底层mmc卡配置函数,将读写函数注册进fat文件系统。
+**
+** 输　入   : 
+**　　    		 			
+** 输　出: 
+**　　　  		1	 失败
+**				0   成功
+** 全局变量:
+**
+** 调用模块:
+**				configure_mmc()			mmc底层初始化(omap3_mmc.c)			
+**				fat_register_device()	注册fat设备(fat.h)			
+**				
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月17日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 int mmc_legacy_init(int verbose)
 {
 	if (configure_mmc(&cur_card_data) != 1)
 		return 1;
 
-	mmc_blk_dev.if_type = IF_TYPE_MMC;
-	mmc_blk_dev.part_type = PART_TYPE_DOS;
-	mmc_blk_dev.dev = 0;
-	mmc_blk_dev.lun = 0;
-	mmc_blk_dev.type = 0;
+	mmc_blk_dev.if_type 		= IF_TYPE_MMC;
+	mmc_blk_dev.part_type 	= PART_TYPE_DOS;
+	mmc_blk_dev.dev 			= 0;
+	mmc_blk_dev.lun 			= 0;
+	mmc_blk_dev.type 			= 0;
 
 	/* FIXME fill in the correct size (is set to 32MByte) */
-	mmc_blk_dev.blksz = MMCSD_SECTOR_SIZE;
-	mmc_blk_dev.lba = 0x10000;
-	mmc_blk_dev.removable = 0;
-	mmc_blk_dev.block_read = mmc_bread;
+	mmc_blk_dev.blksz 		= MMCSD_SECTOR_SIZE;
+	mmc_blk_dev.lba 			= 0x10000;
+	mmc_blk_dev.removable 	= 0;
+	mmc_blk_dev.block_read 	= mmc_bread;/*	块设备读取函数 */
 
 	fat_register_device(&mmc_blk_dev, 1);
 	return 0;

@@ -267,11 +267,31 @@ static int part_block_markbad(struct mtd_info *mtd, loff_t ofs)
 	return res;
 }
 
-/*
- * This function unregisters and destroy all slave MTD objects which are
- * attached to the given master MTD object.
- */
-
+/******************************************************************************
+** 函数名	  :  del_mtd_partitions
+**
+** 功能描述 :	
+**				This function unregisters and destroy all slave MTD objects which are
+** 				attached to the given master MTD object.
+**			
+** 输　入	: 
+**　　			struct mtd_info *master 			主设备			
+**				
+** 输　出: 
+**　　　		int
+**
+** 全局变量:
+**
+** 调用模块:
+**				del_mtd_device()			
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月11日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 int del_mtd_partitions(struct mtd_info *master)
 {
 	struct mtd_part *slave, *next;
@@ -287,6 +307,33 @@ int del_mtd_partitions(struct mtd_info *master)
 	return 0;
 }
 
+/******************************************************************************
+** 函数名	  :  add_one_partition
+**
+** 功能描述 :   
+**				添加一个分区,一般为nand、sd、nor等设备。以master的成员变量来填充
+**				一个mtd_part结构体，并调用add_mtd_device()添加进去。
+**			
+** 输　入	: 
+**　　			struct mtd_info *master				主设备
+**				const struct mtd_partition *parts	分区信息
+**				int partno								分区号
+**				uint64_t cur_offset					
+**				
+** 输　出: 
+**　　　		struct mtd_part* 
+** 全局变量:
+**
+** 调用模块:
+**				add_mtd_device()			添加mtd_info到mtd_table[]中
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月7日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 static struct mtd_part *add_one_partition(struct mtd_info *master,
 		const struct mtd_partition *part, int partno,
 		uint64_t cur_offset)
@@ -454,15 +501,39 @@ out_register:
 	return slave;
 }
 
-/*
- * This function, given a master MTD object and a partition table, creates
- * and registers slave MTD objects which are bound to the master according to
- * the partition definitions.
- *
- * We don't register the master, or expect the caller to have done so,
- * for reasons of data integrity.
- */
 
+/******************************************************************************
+** 函数名	  :  add_mtd_partitions
+**
+** 功能描述 :   
+**			This function, given a master MTD object and a partition table, creates
+** 			and registers slave MTD objects which are bound to the master according to
+** 			the partition definitions.
+**
+** 			We don't register the master, or expect the caller to have done so,
+** 			for reasons of data integrity.
+**			
+**			添加分区，一般给各种文件系统提供的api
+**
+** 输　入	: 
+**　　			struct mtd_info *master
+**				const struct mtd_partition *parts
+**				int nbparts
+**				
+** 输　出: 
+**　　　		0 正确		<0 错误
+** 全局变量:
+**
+** 调用模块:
+**				add_one_partition()			添加一个分区
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月7日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 int add_mtd_partitions(struct mtd_info *master,
 		       const struct mtd_partition *parts,
 		       int nbparts)
