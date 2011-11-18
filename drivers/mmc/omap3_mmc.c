@@ -2,6 +2,7 @@
  * (C) Copyright 2008
  * Texas Instruments, <www.ti.com>
  * Syed Mohammed Khasim <khasim@ti.com>
+ * Xinje,Luwei <sytu_xww@yahoo.com.cn>
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -54,17 +55,61 @@ mmc_card_data cur_card_data;
 static block_dev_desc_t mmc_blk_dev;
 static hsmmc_t *mmc_base = (hsmmc_t *)OMAP_HSMMC_BASE;
 
+/******************************************************************************
+** 函数名	  :	 mmc_get_dev()
+**
+** 功能描述 :  取出mmc设备描述。
+**
+** 输　入   :   		
+**
+** 输　出: 
+**　　　  		1	成功
+**				0  失败
+** 全局变量:
+**
+** 调用模块:
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 block_dev_desc_t *mmc_get_dev(int dev)
 {
 	return (block_dev_desc_t *) &mmc_blk_dev;
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_board_init()
+**
+** 功能描述 :  mmc开发板相关的初始化，比如电源控制等。
+**
+** 输　入   : 
+**　　    		
+**
+** 输　出: 
+**　　　  		1	成功
+**				0  失败
+** 全局变量:
+**
+** 调用模块:
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char mmc_board_init(void)
 {
 #ifdef CONFIG_OMAP
 	t2_t *t2_base = (t2_t *)T2_BASE;
 
 #if defined(CONFIG_TWL4030_POWER)
+	/* 打开电源 */
 	twl4030_power_mmc_init();
 #endif
 
@@ -78,6 +123,28 @@ unsigned char mmc_board_init(void)
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_init_stream()
+**
+** 功能描述 :  发送mmc初始化序列
+**
+** 输　入   : 
+**　　    		
+**
+** 输　出: 
+**　　　  		1	设置成功
+**				0   设置失败
+** 全局变量:
+**
+** 调用模块:
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 void mmc_init_stream(void)
 {
 	writel(readl(&mmc_base->con) | INIT_INITSTREAM, &mmc_base->con);
@@ -93,6 +160,29 @@ void mmc_init_stream(void)
 	writel(readl(&mmc_base->con) & ~INIT_INITSTREAM, &mmc_base->con);
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_clock_config()
+**
+** 功能描述 :  设置mmc控制器的接口时钟分频。
+**
+** 输　入   : 
+**　　    		unsigned int iclk			 接口时钟分类
+**				unsigned short clk_div	 时钟分频系数	
+**
+** 输　出: 
+**　　　  		1	设置成功
+**				0   设置失败
+** 全局变量:
+**
+** 调用模块:
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char mmc_clock_config(unsigned int iclk, unsigned short clk_div)
 {
 	unsigned int val;
@@ -122,6 +212,31 @@ unsigned char mmc_clock_config(unsigned int iclk, unsigned short clk_div)
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_init_setup()
+**
+** 功能描述 :  初始化mmc，首先执行板级相关初始化，然后设置相关寄存器以及时钟等
+**				 参数，最后调用mmc_init_stream()函数发送初始化命令。
+**
+** 输　入   : 
+**　　    		 	
+**
+** 输　出: 
+**　　　  		1	读取成功
+**				0   读取失败
+** 全局变量:
+**
+** 调用模块:
+**					mmc_board_init()			板级相关初始化
+**					mmc_init_stream()			mmc初始化命令序列	
+**
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char mmc_init_setup(void)
 {
 	unsigned int reg_val;
@@ -146,23 +261,49 @@ unsigned char mmc_init_setup(void)
 		HR_NOHOSTRESP | INIT_NOINIT | NOOPENDRAIN, &mmc_base->con);
 	/* 配置mmc时钟 */
 	mmc_clock_config(CLK_INITSEQ, 0);
+	/* 设置mmc电源 */
 	writel(readl(&mmc_base->hctl) | SDBP_PWRON, &mmc_base->hctl);
-
+	/* 使能相关中断 */
 	writel(IE_BADA | IE_CERR | IE_DEB | IE_DCRC | IE_DTO | IE_CIE |
 		IE_CEB | IE_CCRC | IE_CTO | IE_BRR | IE_BWR | IE_TC | IE_CC,
 		&mmc_base->ie);
-	/* mmc初始化序列 */
+	/* mmc初始化命令序列 */
 	mmc_init_stream();
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_send_cmd()
+**
+** 功能描述 :  发送一个mmc命令至mmc卡，根据应答类型读取响应的应答数据。
+**
+** 输　入   : 
+**　　    		 	unsigned int cmd				mmc控制命令
+**					unsigned int arg				
+**					unsigned int *response		mmc应答信息
+**
+** 输　出: 
+**　　　  		1	读取成功
+**				0   读取失败
+** 全局变量:
+**
+** 调用模块:
+**				
+**				
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char mmc_send_cmd(unsigned int cmd, unsigned int arg,
 				unsigned int *response)
 {
 	unsigned int mmc_stat;
 
 	while ((readl(&mmc_base->pstate) & DATI_MASK) == DATI_CMDDIS);
-
+	/*	设置mmc block大小和读取的block的个数 */
 	writel(BLEN_512BYTESLEN | NBLK_STPCNT, &mmc_base->blk);
 	writel(0xFFFFFFFF, &mmc_base->stat);
 	writel(arg, &mmc_base->arg);
@@ -177,7 +318,7 @@ unsigned char mmc_send_cmd(unsigned int cmd, unsigned int arg,
 
 		if ((mmc_stat & ERRI_MASK) != 0)
 			return (unsigned char) mmc_stat;
-
+		/* 命令发送完成 */
 		if (mmc_stat & CC_MASK) {
 			writel(CC_MASK, &mmc_base->stat);
 			response[0] = readl(&mmc_base->rsp10);
@@ -192,22 +333,44 @@ unsigned char mmc_send_cmd(unsigned int cmd, unsigned int arg,
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_read_data()
+**
+** 功能描述 :  从mmc卡中读取一个块的数据。
+**
+** 输　入   : 
+**　　    		 	unsigned int *output_buf  输出缓存
+**
+** 输　出: 
+**　　　  		1	读取成功
+**				0   读取失败
+** 全局变量:
+**
+** 调用模块:
+**				
+**				
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char mmc_read_data(unsigned int *output_buf)
 {
 	unsigned int mmc_stat;
 	unsigned int read_count = 0;
 
-	/*
-	 * Start Polled Read
-	 */
+	/*	 开始循环读取数据 */
 	while (1) {
 		do {
+			/* 读取中断状态寄存器 */
 			mmc_stat = readl(&mmc_base->stat);
 		} while (mmc_stat == 0);
 
 		if ((mmc_stat & ERRI_MASK) != 0)
 			return (unsigned char) mmc_stat;
-
+		/* buffer read ready */
 		if (mmc_stat & BRR_MASK) {
 			unsigned int k;
 
@@ -219,11 +382,11 @@ unsigned char mmc_read_data(unsigned int *output_buf)
 				read_count += 4;
 			}
 		}
-
+		/*	write buffer ready */
 		if (mmc_stat & BWR_MASK)
 			writel(readl(&mmc_base->stat) | BWR_MASK,
 				&mmc_base->stat);
-
+		/* 发送完成 */
 		if (mmc_stat & TC_MASK) {
 			writel(readl(&mmc_base->stat) | TC_MASK,
 				&mmc_base->stat);
@@ -233,6 +396,32 @@ unsigned char mmc_read_data(unsigned int *output_buf)
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_detect_card()
+**
+** 功能描述 :  通过发送特点的命令序列，探测底层mmc卡，在configure_mmc()调用此函数。
+**
+** 输　入   : 
+**　　    		 	mmc_card_data *mmc_dev_data		mmc设备信息
+**					mmc_csd_reg_t *cur_csd			mmc csd信息
+**
+** 输　出: 
+**　　　  		1	 探测mmc成功
+**				0   探测mmc失败
+** 全局变量:
+**
+** 调用模块:
+**				mmc_clock_config()			初始化mmc时钟(omap3_mmc.c)	
+**				mmc_send_cmd()				mmc发送命令(omap3_mmc.c)	
+**				mmc_read_data()				mmc读取数据(omap3_mmc.c)			
+**				
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char mmc_detect_card(mmc_card_data *mmc_card_cur)
 {
 	unsigned char err;
@@ -250,17 +439,20 @@ unsigned char mmc_detect_card(mmc_card_data *mmc_card_cur)
 	argument = 0x00000000;
 
 	ocr_value = (0x1FF << 15);
+	/* CMD0 复位SD卡 */
 	err = mmc_send_cmd(MMC_CMD0, argument, mmc_resp.resp);
 	if (err != 1)
 		return err;
 
 	argument = SD_CMD8_CHECK_PATTERN | SD_CMD8_2_7_3_6_V_RANGE;
+	/* SDCMD8 */
 	err = mmc_send_cmd(MMC_SDCMD8, argument, mmc_resp.resp);
 	hcs_val = (err == 1) ?
 		MMC_OCR_REG_HOST_CAPACITY_SUPPORT_SECTOR :
 		MMC_OCR_REG_HOST_CAPACITY_SUPPORT_BYTE;
 
 	argument = 0x0000 << 16;
+	/* CMD55 指示MMC卡下一条指令为特定的应用指令 */
 	err = mmc_send_cmd(MMC_CMD55, argument, mmc_resp.resp);
 	if (err == 1) {
 		mmc_card_cur->card_type = SD_CARD;
@@ -285,10 +477,12 @@ unsigned char mmc_detect_card(mmc_card_data *mmc_card_cur)
 		retry_cnt--;
 		if (mmc_card_cur->card_type == SD_CARD) {
 			argument = 0x0000 << 16;
+			/* CMD55 */
 			err = mmc_send_cmd(MMC_CMD55, argument, mmc_resp.resp);
 		}
 
 		argument = ocr_value;
+		/*  */
 		err = mmc_send_cmd(ret_cmd41, argument, mmc_resp.resp);
 		if (err != 1)
 			return err;
@@ -344,6 +538,31 @@ unsigned char mmc_detect_card(mmc_card_data *mmc_card_cur)
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 mmc_read_cardsize()
+**
+** 功能描述 :  读取卡大小。
+**
+** 输　入   : 
+**　　    		 	mmc_card_data *mmc_dev_data		mmc设备信息
+**					mmc_csd_reg_t *cur_csd			mmc csd信息
+**
+** 输　出: 
+**　　　  		1	 成功
+**				0   失败
+** 全局变量:
+**
+** 调用模块:
+**				mmc_send_cmd()			mmc发送命令(omap3_mmc.c)			
+**				mmc_read_data()			mmc读取数据(omap3_mmc.c)			
+**				
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char mmc_read_cardsize(mmc_card_data *mmc_dev_data,
 				mmc_csd_reg_t *cur_csd)
 {
@@ -398,6 +617,32 @@ unsigned char mmc_read_cardsize(mmc_card_data *mmc_dev_data,
 	return 1;
 }
 
+/******************************************************************************
+** 函数名	  :	 omap_mmc_read_sect()
+**
+** 功能描述 :  根据参数从mmc卡中读取一定长度的数据至缓存中。
+**
+** 输　入   : 
+**　　    		 	unsigned int 	start_sec		起始块
+**					unsigned int 	num_bytes		字节数
+**				 	mmc_card_data *mmc_c			mmc卡信息
+**				 	unsigned long *output_buf	输出缓存	
+** 输　出: 
+**　　　  		1	 成功
+**				0   失败
+** 全局变量:
+**
+** 调用模块:
+**				mmc_send_cmd()			mmc发送命令(omap3_mmc.c)			
+**				mmc_read_data()			mmc读取数据(omap3_mmc.c)			
+**				
+** 作　者  :  邢伟伟 
+** 日　期  :  2011年11月18日
+**----------------------------------------------------------------------------
+** 修改人:
+** 日　期:
+**----------------------------------------------------------------------------
+******************************************************************************/
 unsigned char omap_mmc_read_sect(unsigned int start_sec, unsigned int num_bytes,
 				 mmc_card_data *mmc_c,
 				 unsigned long *output_buf)
@@ -421,10 +666,11 @@ unsigned char omap_mmc_read_sect(unsigned int start_sec, unsigned int num_bytes,
 	}
 
 	while (num_sec_val) {
+		/* 发送CMD17-块读取命令 */
 		err = mmc_send_cmd(MMC_CMD17, argument, resp);
 		if (err != 1)
 			return err;
-
+		/* 读取一个块数据 */
 		err = mmc_read_data((unsigned int *) output_buf);
 		if (err != 1)
 			return err;
@@ -565,6 +811,7 @@ int mmc_legacy_init(int verbose)
 	if (configure_mmc(&cur_card_data) != 1)
 		return 1;
 
+	/* 添加fat文件系统的块设备操作 */
 	mmc_blk_dev.if_type 		= IF_TYPE_MMC;
 	mmc_blk_dev.part_type 	= PART_TYPE_DOS;
 	mmc_blk_dev.dev 			= 0;
