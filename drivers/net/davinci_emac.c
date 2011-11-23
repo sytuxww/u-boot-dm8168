@@ -721,7 +721,8 @@ int davinci_emac_initialize(void)
 	}
 
 	phy_id |= tmp & 0x0000ffff;
-
+	printf("The Ethernet ID is 0x%08x\n",phy_id);
+#define PHY_ET1011 	0x0282f014
 	switch (phy_id) {
 	#if defined(PHY_LXT972)
 		case PHY_LXT972:
@@ -741,6 +742,13 @@ int davinci_emac_initialize(void)
 			phy.auto_negotiate = dp83848_auto_negotiate;
 			break;
 	#endif
+		case PHY_ET1011:
+			sprintf(phy.name, "ET1011C @ 0x%02x", active_phy_addr);
+			phy.init = gen_init_phy;
+			phy.is_phy_connected = gen_is_phy_connected;
+			phy.get_link_speed = gen_get_link_speed;
+			phy.auto_negotiate = gen_auto_negotiate;
+			break;
 		default:
 			sprintf(phy.name, "GENERIC @ 0x%02x", active_phy_addr);
 			phy.init = gen_init_phy;

@@ -108,7 +108,7 @@ int do_fat_ls (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		return (0);
 	}
 	dev = (int)simple_strtoul (argv[2], &ep, 16);
-	dev_desc=get_dev(argv[1],dev);
+	dev_desc = get_dev(argv[1],dev);
 	if (dev_desc==NULL) {
 		puts ("\n** Invalid boot device **\n");
 		return 1;
@@ -153,7 +153,7 @@ int do_fat_fsinfo (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		return (0);
 	}
 	dev = (int)simple_strtoul (argv[2], &ep, 16);
-	dev_desc=get_dev(argv[1],dev);
+	dev_desc = get_dev(argv[1],dev);
 	if (dev_desc==NULL) {
 		puts ("\n** Invalid boot device **\n");
 		return 1;
