@@ -99,7 +99,7 @@
 	"addip=setenv bootargs ${bootargs} ip=${ipaddr}:${nfsserver}:${gatewayip}:{netmask}:${hostname}:eth0:off\0"\
 	"autoload=no\0"\
 	"nfsserver=192.168.0.140\0"\
-	"bootargs=console=ttyO2,115200n8 root=/dev/nfs nfsroot=192.168.0.140:/home/xww/nfs_root,nolock rw mem=32M@0x80000000 mem=96M@0x88200000\0"\
+	"bootargs=console=ttyO2,115200n8 root=/dev/nfs nfsroot=192.168.0.140:/home/xww/nfs_root,nolock rw mem=256M earlyprink vram=50M ti816xfb.vram=0:16M,1:16M,2:6M ip=off noinitrd\0"\
 	"serverip=192.168.0.140\0"\
 	"ipaddr=192.168.0.98\0"\
 	"netmask=255.255.255.0\0"\
