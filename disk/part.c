@@ -84,6 +84,8 @@ block_dev_desc_t *get_dev(char* ifname, int dev)
 #ifndef CONFIG_RELOC_FIXUP_WORKS
 		reloc_get_dev += gd->reloc_off;
 #endif
+		/* 比较输入的设备name和块设备描述表的name */
+		/* TODO:此处只比较设备描述的前几位 */
 		if (strncmp(ifname, drvr->name, strlen(drvr->name)) == 0)
 			return reloc_get_dev(dev);
 		drvr++;
@@ -186,11 +188,11 @@ void dev_print (block_dev_desc_t *dev_desc)
 		lba512 = (lba * (dev_desc->blksz/512));
 		mb = (10 * lba512) / 2048;	/* 2048 = (1024 * 1024) / 512 MB */
 		/* round to 1 digit */
-		mb_quot	= mb / 10;
+		mb_quot = mb / 10;
 		mb_rem	= mb - (10 * mb_quot);
 
 		gb = mb / 1024;
-		gb_quot	= gb / 10;
+		gb_quot = gb / 10;
 		gb_rem	= gb - (10 * gb_quot);
 #ifdef CONFIG_LBA48
 		if (dev_desc->lba48)

@@ -721,7 +721,7 @@ int davinci_emac_initialize(void)
 	}
 
 	phy_id |= tmp & 0x0000ffff;
-
+	printf("The Ethernet ID is 0x%08x\n",phy_id);
 	switch (phy_id) {
 	#if defined(PHY_LXT972)
 		case PHY_LXT972:
