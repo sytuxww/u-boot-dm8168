@@ -93,9 +93,18 @@
 	"script_addr=0x80900000\0" \
 	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
 	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
-		"source ${script_addr}\0" \
-
+	"source ${script_addr}\0" \
+	"ethaddr=90:d7:eb:22:a6:d0"\
+	"hostname=xww@xww-virtual-machine"\
+	"addip='setenv bootargs ${bootargs} ip=${ipaddr}:${nfsserver}:${gatewayip}:{netmask}:${hostname}:eth0:off'"\
+	"autoload=no"\
+	"nfsserver=192.168.0.140"\
+	"bootargs='console=ttyO2,115200n8 root=/dev/nfs nfsroot=192.168.0.140:home/xww/nfs_root,nolock rw mem=128M'"\
+	"serverip=192.168.0.140"
+	
 #define CONFIG_BOOTCOMMAND \
+	"dhcp;run addip;tftp 0x81000000 uImage;bootm"
+	/*
 	"if mmc init; then " \
 		"if run loadbootscript; then " \
 			"run bootscript; " \
@@ -108,7 +117,7 @@
 		"echo Please set bootargs and bootcmd before booting the kernel; " \
 		"echo If that has already been done please ignore this message; "\
 	"fi"
-
+	*/
 
 #endif
 
