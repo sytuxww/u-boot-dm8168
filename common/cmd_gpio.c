@@ -42,7 +42,7 @@ int do_gpio (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
     else if (strncmp(argv[2],"off",3) == 0)
     {
     	printf("GPIO %d off!\n",gpio);
-      gpio_on_off,0);
+      gpio_on_off(gpio,0);
     }
     else
     	goto usage;
