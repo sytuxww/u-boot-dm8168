@@ -99,8 +99,11 @@
 	"addip=setenv bootargs ${bootargs} ip=${ipaddr}:${nfsserver}:${gatewayip}:{netmask}:${hostname}:eth0:off\0"\
 	"autoload=no\0"\
 	"nfsserver=192.168.0.140\0"\
-	"bootargs=console=ttyO2,115200n8 root=/dev/nfs nfsroot=192.168.0.140:home/xww/nfs_root,nolock rw mem=128M\0"\
-	"serverip=192.168.0.140\0"
+	"bootargs=console=ttyO2,115200n8 root=/dev/nfs nfsroot=192.168.0.140:/home/xww/nfs_root,nolock rw mem=32M@0x80000000 mem=96M@0x88200000\0"\
+	"serverip=192.168.0.140\0"\
+	"ipaddr=192.168.0.98\0"\
+	"netmask=255.255.255.0\0"\
+	"gateway=192.168.0.1\0"
 	
 #define CONFIG_BOOTCOMMAND \
 	"dhcp;run addip;tftp 0x81000000 uImage;bootm"
