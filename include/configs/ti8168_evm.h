@@ -94,13 +94,13 @@
 	"loadbootscript=fatload mmc 1 ${script_addr} boot.scr\0" \
 	"bootscript= echo Running bootscript from MMC/SD to set the ENV...; " \
 	"source ${script_addr}\0" \
-	"ethaddr=90:d7:eb:22:a6:d0"\
-	"hostname=xww@xww-virtual-machine"\
-	"addip='setenv bootargs ${bootargs} ip=${ipaddr}:${nfsserver}:${gatewayip}:{netmask}:${hostname}:eth0:off'"\
-	"autoload=no"\
-	"nfsserver=192.168.0.140"\
-	"bootargs='console=ttyO2,115200n8 root=/dev/nfs nfsroot=192.168.0.140:home/xww/nfs_root,nolock rw mem=128M'"\
-	"serverip=192.168.0.140"
+	"ethaddr=90:d7:eb:22:a6:d0\0"\
+	"hostname=xww@xww-virtual-machine\0"\
+	"addip=setenv bootargs ${bootargs} ip=${ipaddr}:${nfsserver}:${gatewayip}:{netmask}:${hostname}:eth0:off\0"\
+	"autoload=no\0"\
+	"nfsserver=192.168.0.140\0"\
+	"bootargs=console=ttyO2,115200n8 root=/dev/nfs nfsroot=192.168.0.140:home/xww/nfs_root,nolock rw mem=128M\0"\
+	"serverip=192.168.0.140\0"
 	
 #define CONFIG_BOOTCOMMAND \
 	"dhcp;run addip;tftp 0x81000000 uImage;bootm"
