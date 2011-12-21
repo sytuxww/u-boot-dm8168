@@ -37,7 +37,7 @@ static struct nand_chip nand_chip[CONFIG_SYS_MAX_NAND_DEVICE];
 static ulong base_address[CONFIG_SYS_MAX_NAND_DEVICE] = CONFIG_SYS_NAND_BASE_LIST;
 
 static const char default_nand_name[] = "nand";
-static __attribute__((unused)) char dev_name[CONFIG_SYS_MAX_NAND_DEVICE][8];
+static __attribute__((unused)) char dev_name[CONFIG_SYS_MAX_NAND_DEVICE][15];
 
 static void nand_init_chip(struct mtd_info *mtd, struct nand_chip *nand,
 			   ulong base_addr)
@@ -64,7 +64,13 @@ static void nand_init_chip(struct mtd_info *mtd, struct nand_chip *nand,
 			 * Add MTD device so that we can reference it later
 			 * via the mtdcore infrastructure (e.g. ubi).
 			 */
-			sprintf(dev_name[i], "nand%d", i);
+#if defined(CONFIG_NAND_MICRON)
+			sprintf(dev_name[i], "MT29F2G16-%d", i);
+#else if defined(CONFIG_NAND_SAMSUNG)
+			sprintf(dev_name[i], "K9F2G08U-%d", i);
+#else
+			sprintf(dev_name[i], "nand-%d", i);
+#endif
 			mtd->name = dev_name[i++];
 			add_mtd_device(mtd);
 #endif
