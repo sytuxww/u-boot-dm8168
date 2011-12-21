@@ -66,7 +66,7 @@ static void nand_init_chip(struct mtd_info *mtd, struct nand_chip *nand,
 			 */
 #if defined(CONFIG_NAND_MICRON)
 			sprintf(dev_name[i], "MT29F2G16-%d", i);
-#else if defined(CONFIG_NAND_SAMSUNG)
+#elif defined(CONFIG_NAND_SAMSUNG)
 			sprintf(dev_name[i], "K9F2G08U-%d", i);
 #else
 			sprintf(dev_name[i], "nand-%d", i);
